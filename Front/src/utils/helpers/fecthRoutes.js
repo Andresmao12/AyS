@@ -1,0 +1,1 @@
+export const fetchRoute = 'http://localhost:5266'

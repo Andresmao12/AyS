@@ -1,0 +1,144 @@
+[
+    {
+        "name": "tipo_indicador",
+        "table": "tipoindicador",
+        "fields": [
+            {
+                "name": "id",
+                "type": "number",
+                "required": true,
+                "disabled": true
+            },
+            {
+                "name": "nombre",
+                "type": "string",
+                "required": true,
+                "disabled": false
+            }
+        ],
+        "endpoints": {
+            "getAll": "/api/{nombreProyecto}/{nombreTabla}",
+            "getById": "/api/{nombreProyecto}/{nombreTabla}/{nombreClave}/{valor}",
+            "create": "/api/{nombreProyecto}/{nombreTabla}",
+            "update": "/api/{nombreProyecto}/{nombreTabla}/{nombreClave}/{valorClave}",
+            "delete": "/api/{nombreProyecto}/{nombreTabla}/{nombreClave}/{valorClave}"
+        }
+    },
+    {
+        "name": "reprensentacion_visual",
+        "table": "represenvisual",
+        "fields": [
+            {
+                "name": "id",
+                "type": "number",
+                "required": false,
+                "disabled": true
+            },
+            {
+                "name": "nombre",
+                "type": "string",
+                "required": true,
+                "disabled": false
+            }
+        ],
+        "endpoints": {
+            "getAll": "/api/{nombreProyecto}/{nombreTabla}",
+            "getById": "/api/{nombreProyecto}/{nombreTabla}/{nombreClave}/{valor}",
+            "create": "/api/{nombreProyecto}/{nombreTabla}",
+            "update": "/api/{nombreProyecto}/{nombreTabla}/{nombreClave}/{valorClave}",
+            "delete": "/api/{nombreProyecto}/{nombreTabla}/{nombreClave}/{valorClave}"
+        }
+    },
+    {
+        "name": "tipo_actor",
+        "table": "tipoactor",
+        "fields": [
+            {
+                "name": "id",
+                "type": "number",
+                "required": true
+            },
+            {
+                "name": "nombre",
+                "type": "string",
+                "required": true
+            }
+        ],
+        "endpoints": {
+            "getAll": "/api/{nombreProyecto}/{nombreTabla}",
+            "getById": "/api/{nombreProyecto}/{nombreTabla}/{nombreClave}/{valor}",
+            "create": "/api/{nombreProyecto}/{nombreTabla}",
+            "update": "/api/{nombreProyecto}/{nombreTabla}/{nombreClave}/{valorClave}",
+            "delete": "/api/{nombreProyecto}/{nombreTabla}/{nombreClave}/{valorClave}"
+        }
+    },
+    {
+        "name": "fuente",
+        "table": "fuente",
+        "fields": [
+            {
+                "name": "id",
+                "type": "number",
+                "required": true
+            },
+            {
+                "name": "nombre",
+                "type": "string",
+                "required": true
+            }
+        ],
+        "endpoints": {
+            "getAll": "/api/{nombreProyecto}/{nombreTabla}",
+            "getById": "/api/{nombreProyecto}/{nombreTabla}/{nombreClave}/{valor}",
+            "create": "/api/{nombreProyecto}/{nombreTabla}",
+            "update": "/api/{nombreProyecto}/{nombreTabla}/{nombreClave}/{valorClave}",
+            "delete": "/api/{nombreProyecto}/{nombreTabla}/{nombreClave}/{valorClave}"
+        }
+    },
+    {
+        "name": "unidad_medicion",
+        "table": "unidadmedicion",
+        "fields": [
+            {
+                "name": "id",
+                "type": "number",
+                "required": true
+            },
+            {
+                "name": "descripcion",
+                "type": "string",
+                "required": true
+            }
+        ],
+        "endpoints": {
+            "getAll": "/api/{nombreProyecto}/{nombreTabla}",
+            "getById": "/api/{nombreProyecto}/{nombreTabla}/{nombreClave}/{valor}",
+            "create": "/api/{nombreProyecto}/{nombreTabla}",
+            "update": "/api/{nombreProyecto}/{nombreTabla}/{nombreClave}/{valorClave}",
+            "delete": "/api/{nombreProyecto}/{nombreTabla}/{nombreClave}/{valorClave}"
+        }
+    },
+    {
+        "name": "sentido",
+        "table": "sentido",
+        "fields": [
+            {
+                "name": "id",
+                "type": "number",
+                "required": true
+            },
+            {
+                "name": "nombre",
+                "type": "string",
+                "required": true
+            }
+        ],
+        "endpoints": {
+            "getAll": "/api/{nombreProyecto}/{nombreTabla}",
+            "getById": "/api/{nombreProyecto}/{nombreTabla}/{nombreClave}/{valor}",
+            "create": "/api/{nombreProyecto}/{nombreTabla}",
+            "update": "/api/{nombreProyecto}/{nombreTabla}/{nombreClave}/{valorClave}",
+            "delete": "/api/{nombreProyecto}/{nombreTabla}/{nombreClave}/{valorClave}"
+        }
+    }
+]
