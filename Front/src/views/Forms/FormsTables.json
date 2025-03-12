@@ -7,7 +7,7 @@
                 "name": "id",
                 "type": "number",
                 "required": true,
-                "disabled": true
+                "disabled": false
             },
             {
                 "name": "nombre",
@@ -32,7 +32,7 @@
                 "name": "id",
                 "type": "number",
                 "required": false,
-                "disabled": true
+                "disabled": false
             },
             {
                 "name": "nombre",

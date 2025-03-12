@@ -1,17 +1,17 @@
 {
   "format": 1,
   "restore": {
-    "C:\\Users\\andao\\OneDrive\\Desktop\\proyectos u\\Desarrollo web\\csharpapi\\csharpapi.csproj": {}
+    "C:\\Users\\andao\\OneDrive\\Desktop\\proyectos u\\Desarrollo web\\AyS\\Back\\csharpapi.csproj": {}
   },
   "projects": {
-    "C:\\Users\\andao\\OneDrive\\Desktop\\proyectos u\\Desarrollo web\\csharpapi\\csharpapi.csproj": {
+    "C:\\Users\\andao\\OneDrive\\Desktop\\proyectos u\\Desarrollo web\\AyS\\Back\\csharpapi.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "C:\\Users\\andao\\OneDrive\\Desktop\\proyectos u\\Desarrollo web\\csharpapi\\csharpapi.csproj",
+        "projectUniqueName": "C:\\Users\\andao\\OneDrive\\Desktop\\proyectos u\\Desarrollo web\\AyS\\Back\\csharpapi.csproj",
         "projectName": "csharpapi",
-        "projectPath": "C:\\Users\\andao\\OneDrive\\Desktop\\proyectos u\\Desarrollo web\\csharpapi\\csharpapi.csproj",
+        "projectPath": "C:\\Users\\andao\\OneDrive\\Desktop\\proyectos u\\Desarrollo web\\AyS\\Back\\csharpapi.csproj",
         "packagesPath": "C:\\Users\\andao\\.nuget\\packages\\",
-        "outputPath": "C:\\Users\\andao\\OneDrive\\Desktop\\proyectos u\\Desarrollo web\\csharpapi\\obj\\",
+        "outputPath": "C:\\Users\\andao\\OneDrive\\Desktop\\proyectos u\\Desarrollo web\\AyS\\Back\\obj\\",
         "projectStyle": "PackageReference",
         "configFilePaths": [
           "C:\\Users\\andao\\AppData\\Roaming\\NuGet\\NuGet.Config",

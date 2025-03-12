@@ -13,7 +13,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("csharpapi")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+c18dafed0d883aa8352bb601ccf43672664c3f04")]
 [assembly: System.Reflection.AssemblyProductAttribute("csharpapi")]
 [assembly: System.Reflection.AssemblyTitleAttribute("csharpapi")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]

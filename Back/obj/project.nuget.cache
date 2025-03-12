@@ -1,8 +1,8 @@
 {
   "version": 2,
-  "dgSpecHash": "Hua5O2+uYvg=",
+  "dgSpecHash": "kY+dPk7+RyM=",
   "success": true,
-  "projectFilePath": "C:\\Users\\andao\\OneDrive\\Desktop\\proyectos u\\Desarrollo web\\csharpapi\\csharpapi.csproj",
+  "projectFilePath": "C:\\Users\\andao\\OneDrive\\Desktop\\proyectos u\\Desarrollo web\\AyS\\Back\\csharpapi.csproj",
   "expectedPackageFiles": [
     "C:\\Users\\andao\\.nuget\\packages\\azure.core\\1.38.0\\azure.core.1.38.0.nupkg.sha512",
     "C:\\Users\\andao\\.nuget\\packages\\azure.identity\\1.11.4\\azure.identity.1.11.4.nupkg.sha512",

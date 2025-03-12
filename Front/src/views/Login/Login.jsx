@@ -8,7 +8,7 @@ const Login = () => {
     return (
         <main style={{display : "flex", justifyContent : "center", alignItems: "center", height : "100%", width : "100vw"}}>
 
-            <button onClick={() => navigate("/access")}>Access</button>
+            <button onClick={() => navigate("/formularios")}>Access</button>
 
         </main>
     )
