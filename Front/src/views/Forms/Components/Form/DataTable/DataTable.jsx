@@ -3,7 +3,6 @@ import './DataTable.css'
 
 export const DataTable = ({ data, columns }) => {
 
-    console.log(data)
     return (
         <table className="data-table">
             <thead>

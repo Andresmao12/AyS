@@ -7,6 +7,8 @@ import './FormsTemplate.css'
 import { AddButton } from './Components/Form/AddButton/AddButton'
 import { DataTable } from './Components/Form/DataTable/DataTable'
 import { fetchRoute } from '../../utils/helpers/fecthRoutes'
+import SearchButton from './Components/Form/SearchButton/SearchButton'
+import { SearchForm } from './Components/Form/SearchForm/SearchForm'
 
 export const FormsTemplate = () => {
 
@@ -14,6 +16,7 @@ export const FormsTemplate = () => {
 
 
     const [showForm, setShowForm] = useState(false);
+    const [showSearchInput, setshowSearchInput] = useState(false)
     const [selectedData, setSelectedData] = useState(null);
     const [tableData, setTableData] = useState([]);
 
@@ -33,8 +36,12 @@ export const FormsTemplate = () => {
 
     const handleAdd = () => {
         setSelectedData(null);
-        setShowForm(true);
+        setShowForm(!showForm);
     };
+
+    const handleSearch = () => {
+        setshowSearchInput(!showSearchInput)
+    }
 
     const handleConsultar = async (formData) => {
         try {
@@ -74,9 +81,6 @@ export const FormsTemplate = () => {
                 body: JSON.stringify(formData),
             });
             const result = await response.json();
-            console.log('Datos guardados:', result);
-            console.log(result)
-            console.log(formData)
             setShowForm(false);
         } catch (error) {
             console.error('Error al guardar los datos:', error);
@@ -96,9 +100,8 @@ export const FormsTemplate = () => {
         }
     }
 
-    const onSubmit = async (name) => {
-        console.log(name)
-        setTableData([...tableData, { nombre: name, id: tableData.length + 1 }])
+    const onSubmit = async (nuevaEntrada) => {
+        setTableData([...tableData, nuevaEntrada])
     }
 
     return (
@@ -108,7 +111,11 @@ export const FormsTemplate = () => {
             <div className="content">
                 {Object.keys(schema).length !== 0 && (
                     <>
-                        <AddButton onClick={handleAdd} />
+                        <div className='flex-row-end'>
+                            <SearchButton onClick={handleSearch} />
+                            <AddButton onClick={handleAdd} />
+                        </div>
+
                         {showForm && (
                             <DynamicForm
                                 schema={schema}
@@ -118,6 +125,19 @@ export const FormsTemplate = () => {
                                 initialData={selectedData || {}}
                             />
                         )}
+
+                        {
+                            showSearchInput && (
+                                <SearchForm
+                                    schema={schema}
+                                    onSubmit={onSubmit}
+                                    onCancel={() => setshowSearchInput(false)}
+                                    onConsultar={handleConsultar}
+                                    initialData={selectedData || {}}
+
+                                />
+                            )
+                        }
                         <DataTable data={tableData} columns={columnsSchema} />
                     </>
                 )}

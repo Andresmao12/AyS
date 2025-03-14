@@ -25,3 +25,11 @@
 .add-button {
   margin-bottom: 20px; /* Espacio entre el botón y el formulario */
 }
+
+.flex-row-end {
+  width: 100%;
+  display: flex;
+  flex-direction: row;
+  justify-content: flex-end;
+  gap: 20px;
+}

@@ -1,8 +1,6 @@
-import React, { useState } from 'react';
-import './DynamicForm.css';
-import { fetchRoute } from '../../../../../utils/helpers/fecthRoutes';
+import React, { useState } from 'react'
 
-export const DynamicForm = ({ schema, onSubmit, onCancel, initialData = {}, onConsultar }) => {
+export const SearchForm = ({ schema, onSubmit, onCancel, initialData = {}, onConsultar }) => {
 
     const [formData, setFormData] = useState(initialData)
 
@@ -11,45 +9,19 @@ export const DynamicForm = ({ schema, onSubmit, onCancel, initialData = {}, onCo
         setFormData({ ...formData, [name]: value });
     };
 
-    const handleSubmit = async (e) => {
-        e.preventDefault();
-        try {
-            const endpoint = schema.endpoints.create.replace('{nombreProyecto}', 'proyecto').replace('{nombreTabla}', schema.table);
-            const response = await fetch(`${fetchRoute}${endpoint}`, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify(formData),
-            });
-
-            if (response.status == 200) {
-                setFormData({})
-                const nombreDato = Object.keys(formData)[0]
-                const nuevaEntrada = {
-                    [nombreDato]: formData[nombreDato]
-                }
-
-                onSubmit(nuevaEntrada);
-            }
-
-        } catch (error) {
-            console.error('Error al enviar el formulario:', error);
-        }
-    };
-
     const handleConsultar = async () => {
         if (onConsultar) {
             onConsultar(formData);
         }
     };
 
+
     return (
         <div className="dynamic-form-container">
-            <form className="dynamic-form" onSubmit={handleSubmit}>
+            <form className="dynamic-form">
                 {schema.fields.map((field) => (
 
-                    field.name !== "id" && (
+                    field.name == "id" && (
                         <div className="form-group" key={field.name}>
                             <label>{field.name}</label>
                             {field.type === 'string' && (
@@ -76,11 +48,10 @@ export const DynamicForm = ({ schema, onSubmit, onCancel, initialData = {}, onCo
                     )
                 ))}
                 <div className="form-actions">
-                    <button type="submit" className="submit-button">Guardar</button>
                     <button type="button" className="consultar-button" onClick={handleConsultar}>Consultar</button>
                     <button type="button" className="cancel-button" onClick={onCancel}>Cancelar</button>
                 </div>
             </form>
         </div>
-    );
-};
+    )
+}
