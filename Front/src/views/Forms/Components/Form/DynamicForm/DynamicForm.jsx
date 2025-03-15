@@ -23,14 +23,20 @@ export const DynamicForm = ({ schema, onSubmit, onCancel, initialData = {} }) =>
                 body: JSON.stringify(formData),
             });
 
-            if (response.status == 200) {
+            if (response.status == 201) {
+
+                const result = await response.json(); // Obtenemos el registro con ID del backend
+                console.log(result)
+
                 setFormData({})
                 const nombreDato = Object.keys(formData)[0]
                 const nuevaEntrada = {
-                    [nombreDato]: formData[nombreDato]
+                    [nombreDato]: formData[nombreDato],
+                    "id" : result["id"]
                 }
 
                 onSubmit(nuevaEntrada);
+
             }
 
         } catch (error) {

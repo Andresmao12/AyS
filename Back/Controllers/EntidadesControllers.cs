@@ -366,7 +366,7 @@ namespace ProyectoBackendCsharp.Controllers
                 var valores = string.Join(",", propiedades.Keys.Select(k => $"{ObtenerPrefijoParametro(proveedor)}{k}"));
 
                 // Genera la consulta SQL de inserción.
-                string consultaSQL = $"INSERT INTO {nombreTabla} ({columnas}) VALUES ({valores})";
+                string consultaSQL = $"INSERT INTO {nombreTabla} ({columnas}) VALUES ({valores}); SELECT SCOPE_IDENTITY();";
 
                 // Crea los parámetros para la consulta SQL.
                 var parametros = propiedades.Select(p => 
@@ -382,11 +382,17 @@ namespace ProyectoBackendCsharp.Controllers
 
                 // Abre la conexión a la base de datos y ejecuta la inserción.
                 controlConexion.AbrirBd();
-                controlConexion.EjecutarComandoSql(consultaSQL, parametros);
+                var idGenerated = controlConexion.EjecutarFuncion(consultaSQL, parametros);
                 controlConexion.CerrarBd();
 
-                // Retorna un mensaje de éxito indicando que la entidad se creó correctamente.
-                return Ok("Entidad creada exitosamente.");
+                if (idGenerated != null) //Retorna el ID del nuevo registro
+                {
+                    return CreatedAtAction(nameof(Crear), new { id = idGenerated }, new { id = idGenerated });
+                }
+                else
+                {
+                    return StatusCode(500, "Error al obtener el ID del nuevo registro.");
+                }
             }
             catch (Exception ex) // Captura cualquier error inesperado.
             {
