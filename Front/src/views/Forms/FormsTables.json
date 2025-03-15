@@ -7,7 +7,8 @@
                 "name": "id",
                 "type": "number",
                 "required": false,
-                "disabled": false
+                "disabled": false,
+                "primaryKey": true
             },
             {
                 "name": "nombre",
@@ -32,7 +33,8 @@
                 "name": "id",
                 "type": "number",
                 "required": false,
-                "disabled": false
+                "disabled": false,
+                "primaryKey": true
             },
             {
                 "name": "nombre",
@@ -56,7 +58,8 @@
             {
                 "name": "id",
                 "type": "number",
-                "required": true
+                "required": true,
+                "primaryKey": true
             },
             {
                 "name": "nombre",
@@ -79,7 +82,8 @@
             {
                 "name": "id",
                 "type": "number",
-                "required": true
+                "required": true,
+                "primaryKey": true
             },
             {
                 "name": "nombre",
@@ -102,7 +106,8 @@
             {
                 "name": "id",
                 "type": "number",
-                "required": true
+                "required": true,
+                "primaryKey": true
             },
             {
                 "name": "descripcion",
@@ -125,7 +130,8 @@
             {
                 "name": "id",
                 "type": "number",
-                "required": true
+                "required": true,
+                "primaryKey": true
             },
             {
                 "name": "nombre",

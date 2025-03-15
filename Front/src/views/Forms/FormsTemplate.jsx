@@ -9,6 +9,7 @@ import { DataTable } from './Components/Form/DataTable/DataTable'
 import { fetchRoute } from '../../utils/helpers/fecthRoutes'
 import SearchButton from './Components/Form/SearchButton/SearchButton'
 import { SearchForm } from './Components/Form/SearchForm/SearchForm'
+import UpdateModal from './Components/Form/UpdateModal/UpdateModal'
 
 export const FormsTemplate = () => {
 
@@ -17,16 +18,24 @@ export const FormsTemplate = () => {
 
     const [showForm, setShowForm] = useState(false);
     const [showSearchInput, setshowSearchInput] = useState(false)
+    const [showUpdateModal, setShowUpdateModal] = useState(false)
+
     const [selectedData, setSelectedData] = useState(null);
     const [tableData, setTableData] = useState([]);
 
+    const [actualUpdateValues, setactualUpdateValues] = useState({})
+
     const [schema, setschema] = useState({})
     const [columnsSchema, setcolumnsSchema] = useState([])
+    const [primaryKey, setprimaryKey] = useState('')
 
     useEffect(() => {
         if (table) {
             const findTableData = formData.find(schema => schema.name == table)
             const columns = findTableData.fields.map((field) => field.name)
+            const primaryKey = findTableData.fields.find(field => field.primaryKey === true).name
+
+            setprimaryKey(primaryKey)
             setcolumnsSchema(columns)
             consultarTodas(findTableData)
             setschema(findTableData)
@@ -59,34 +68,6 @@ export const FormsTemplate = () => {
         }
     };
 
-    const handleSubmit = async (formData) => {
-        const endpoint = selectedData
-            ? schema.endpoints.update
-                .replace('{nombreProyecto}', 'proyecto')
-                .replace('{nombreTabla}', schema.table)
-                .replace('{nombreClave}', 'id')
-                .replace('{valorClave}', selectedData.id)
-            : schema.endpoints.create
-                .replace('{nombreProyecto}', 'proyecto')
-                .replace('{nombreTabla}', schema.table);
-
-        const method = selectedData ? 'PUT' : 'POST';
-
-        try {
-            const response = await fetch(`${fetchRoute}${endpoint}`, {
-                method,
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify(formData),
-            });
-            const result = await response.json();
-            setShowForm(false);
-        } catch (error) {
-            console.error('Error al guardar los datos:', error);
-        }
-    };
-
     const consultarTodas = async (schema) => {
         try {
             const endpoint = schema.endpoints.getAll
@@ -102,6 +83,90 @@ export const FormsTemplate = () => {
 
     const onSubmit = async (nuevaEntrada) => {
         setTableData([...tableData, nuevaEntrada])
+    }
+
+    const handleDelete = async (row) => {
+        const value = row[primaryKey]
+
+        const endpoint = schema.endpoints.delete
+            .replace('{nombreProyecto}', 'proyecto')
+            .replace('{nombreTabla}', schema.table)
+            .replace('{nombreClave}', primaryKey)
+            .replace('{valorClave}', value);
+
+        try {
+            const response = await fetch(`${fetchRoute}${endpoint}`, {
+                method: 'Delete',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+            });
+
+            if (response.status === 200) {
+                setTableData((prevData) =>
+                    prevData.filter((row) => row.id !== value)
+                );
+                alert("Eliminado con exito")
+            } else {
+                alert(response)
+            }
+
+        } catch (error) {
+            console.error(error)
+            alert('Ha ocurrido un error')
+        }
+
+
+    }
+
+    const handleChangeViewUpdateModal = (row) => {
+        setactualUpdateValues(row)
+        setShowUpdateModal(true)
+    }
+
+    const onUpdate = async (updatedData) => {
+        const changedFields = {};
+        for (const key in updatedData) {
+            if (updatedData[key] !== actualUpdateValues[key]) {
+                changedFields[key] = updatedData[key];
+            }
+        }
+
+        if (Object.keys(changedFields).length === 0) {
+            console.log('No hay cambios para actualizar');
+            return;
+        }
+
+
+        try {
+            const endpoint = schema.endpoints.update
+                .replace('{nombreProyecto}', 'Proyecto')
+                .replace('{nombreTabla}', schema.table)
+                .replace('{nombreClave}', primaryKey)
+                .replace('{valorClave}', actualUpdateValues.id);
+
+
+            const response = await fetch(`${fetchRoute}${endpoint}`, {
+                method: 'PUT',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(changedFields),
+            });
+
+            if (response.ok) {
+                setTableData((prevData) =>
+                    prevData.map((row) =>
+                        row.id === updatedData.id ? { ...row, ...changedFields } : row
+                    )
+                );
+            } else {
+                console.error('Error al actualizar el registro');
+            }
+        } catch (error) {
+            console.error(error)
+            alert("Ha ocurrido un problema al actualizar")
+        }
     }
 
     return (
@@ -121,7 +186,6 @@ export const FormsTemplate = () => {
                                 schema={schema}
                                 onSubmit={onSubmit}
                                 onCancel={() => setShowForm(false)}
-                                onConsultar={handleConsultar}
                                 initialData={selectedData || {}}
                             />
                         )}
@@ -130,7 +194,6 @@ export const FormsTemplate = () => {
                             showSearchInput && (
                                 <SearchForm
                                     schema={schema}
-                                    onSubmit={onSubmit}
                                     onCancel={() => setshowSearchInput(false)}
                                     onConsultar={handleConsultar}
                                     initialData={selectedData || {}}
@@ -138,7 +201,16 @@ export const FormsTemplate = () => {
                                 />
                             )
                         }
-                        <DataTable data={tableData} columns={columnsSchema} />
+                        <DataTable data={tableData} columns={columnsSchema} onDelete={handleDelete} onUpdate={handleChangeViewUpdateModal} />
+
+                        {showUpdateModal && (
+                            <UpdateModal
+                                schema={schema}
+                                onUpdate={onUpdate}
+                                onClose={() => setShowUpdateModal(false)}
+                                actualValues={actualUpdateValues}
+                            />
+                        )}
                     </>
                 )}
             </div>

@@ -1,6 +1,6 @@
 import React, { useState } from 'react'
 
-export const SearchForm = ({ schema, onSubmit, onCancel, initialData = {}, onConsultar }) => {
+export const SearchForm = ({ schema, onCancel, initialData = {}, onConsultar }) => {
 
     const [formData, setFormData] = useState(initialData)
 

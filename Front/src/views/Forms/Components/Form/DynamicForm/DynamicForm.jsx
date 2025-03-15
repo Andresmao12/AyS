@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import './DynamicForm.css';
 import { fetchRoute } from '../../../../../utils/helpers/fecthRoutes';
 
-export const DynamicForm = ({ schema, onSubmit, onCancel, initialData = {}, onConsultar }) => {
+export const DynamicForm = ({ schema, onSubmit, onCancel, initialData = {} }) => {
 
     const [formData, setFormData] = useState(initialData)
 
@@ -35,12 +35,6 @@ export const DynamicForm = ({ schema, onSubmit, onCancel, initialData = {}, onCo
 
         } catch (error) {
             console.error('Error al enviar el formulario:', error);
-        }
-    };
-
-    const handleConsultar = async () => {
-        if (onConsultar) {
-            onConsultar(formData);
         }
     };
 
@@ -77,7 +71,6 @@ export const DynamicForm = ({ schema, onSubmit, onCancel, initialData = {}, onCo
                 ))}
                 <div className="form-actions">
                     <button type="submit" className="submit-button">Guardar</button>
-                    <button type="button" className="consultar-button" onClick={handleConsultar}>Consultar</button>
                     <button type="button" className="cancel-button" onClick={onCancel}>Cancelar</button>
                 </div>
             </form>
