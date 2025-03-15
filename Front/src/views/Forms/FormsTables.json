@@ -146,5 +146,29 @@
             "update": "/api/{nombreProyecto}/{nombreTabla}/{nombreClave}/{valorClave}",
             "delete": "/api/{nombreProyecto}/{nombreTabla}/{nombreClave}/{valorClave}"
         }
+    },
+    {
+        "name": "frecuencia",
+        "table": "frecuencia",
+        "fields": [
+            {
+                "name": "id",
+                "type": "number",
+                "required": true,
+                "primaryKey": true
+            },
+            {
+                "name": "nombre",
+                "type": "string",
+                "required": true
+            }
+        ],
+        "endpoints": {
+            "getAll": "/api/{nombreProyecto}/{nombreTabla}",
+            "getById": "/api/{nombreProyecto}/{nombreTabla}/{nombreClave}/{valor}",
+            "create": "/api/{nombreProyecto}/{nombreTabla}",
+            "update": "/api/{nombreProyecto}/{nombreTabla}/{nombreClave}/{valorClave}",
+            "delete": "/api/{nombreProyecto}/{nombreTabla}/{nombreClave}/{valorClave}"
+        }
     }
 ]

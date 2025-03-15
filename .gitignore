@@ -1,5 +1,8 @@
 node_modules
 
+Back/obj
+Back/bin
+
 # Logs
 logs
 *.log

@@ -7,7 +7,7 @@ export const Sidebar = ({ userRole = 'admin' }) => {
     const navigate = useNavigate()
 
     const permissions = {
-        admin: ['tipo_indicador', 'unidad_medicion', 'reprensentacion_visual', 'tipo_actor', 'fuente', 'sentido'],
+        admin: ['tipo_indicador', 'unidad_medicion', 'reprensentacion_visual', 'tipo_actor', 'fuente', 'sentido', 'frecuencia'],
         verificador: [''],
         validador: []
     }
