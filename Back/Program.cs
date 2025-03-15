@@ -61,8 +61,8 @@ if (app.Environment.IsDevelopment()) // Verifica si la aplicación está en el e
         c.RoutePrefix = "swagger"; //  Swagger estará en http://localhost:5266/swagger
     });
 }
-
-app.UseHttpsRedirection(); // Fuerza la redirección de las solicitudes HTTP a HTTPS para mejorar la seguridad.
+//TEMPORAL
+//app.UseHttpsRedirection(); // Fuerza la redirección de las solicitudes HTTP a HTTPS para mejorar la seguridad.
 
 app.UseCors("AllowAllOrigins"); // Aplica la política de CORS que permite solicitudes desde cualquier origen.
 app.UseSession(); // Habilita el soporte de sesiones en el middleware de la aplicación.
