@@ -1,20 +1,20 @@
 {
   "format": 1,
   "restore": {
-    "C:\\Users\\andao\\OneDrive\\Desktop\\proyectos u\\Desarrollo web\\AyS\\Back\\csharpapi.csproj": {}
+    "C:\\Users\\andre\\OneDrive\\Escritorio\\PracticasVS\\AyS\\Back\\csharpapi.csproj": {}
   },
   "projects": {
-    "C:\\Users\\andao\\OneDrive\\Desktop\\proyectos u\\Desarrollo web\\AyS\\Back\\csharpapi.csproj": {
+    "C:\\Users\\andre\\OneDrive\\Escritorio\\PracticasVS\\AyS\\Back\\csharpapi.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "C:\\Users\\andao\\OneDrive\\Desktop\\proyectos u\\Desarrollo web\\AyS\\Back\\csharpapi.csproj",
+        "projectUniqueName": "C:\\Users\\andre\\OneDrive\\Escritorio\\PracticasVS\\AyS\\Back\\csharpapi.csproj",
         "projectName": "csharpapi",
-        "projectPath": "C:\\Users\\andao\\OneDrive\\Desktop\\proyectos u\\Desarrollo web\\AyS\\Back\\csharpapi.csproj",
-        "packagesPath": "C:\\Users\\andao\\.nuget\\packages\\",
-        "outputPath": "C:\\Users\\andao\\OneDrive\\Desktop\\proyectos u\\Desarrollo web\\AyS\\Back\\obj\\",
+        "projectPath": "C:\\Users\\andre\\OneDrive\\Escritorio\\PracticasVS\\AyS\\Back\\csharpapi.csproj",
+        "packagesPath": "C:\\Users\\andre\\.nuget\\packages\\",
+        "outputPath": "C:\\Users\\andre\\OneDrive\\Escritorio\\PracticasVS\\AyS\\Back\\obj\\",
         "projectStyle": "PackageReference",
         "configFilePaths": [
-          "C:\\Users\\andao\\AppData\\Roaming\\NuGet\\NuGet.Config",
+          "C:\\Users\\andre\\AppData\\Roaming\\NuGet\\NuGet.Config",
           "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
         ],
         "originalTargetFrameworks": [
@@ -98,7 +98,7 @@
               "privateAssets": "all"
             }
           },
-          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\8.0.406/PortableRuntimeIdentifierGraph.json"
+          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\8.0.407/PortableRuntimeIdentifierGraph.json"
         }
       }
     }
