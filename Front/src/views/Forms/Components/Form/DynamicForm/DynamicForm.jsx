@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import './DynamicForm.css';
 import { fetchRoute } from '../../../../../utils/helpers/fecthRoutes';
 
-export const DynamicForm = ({ schema, onSubmit, onCancel, initialData = {} }) => {
+const DynamicForm = ({ schema, onSubmit, onCancel, initialData = {} }) => {
 
     const [formData, setFormData] = useState(initialData)
 
@@ -32,7 +32,7 @@ export const DynamicForm = ({ schema, onSubmit, onCancel, initialData = {} }) =>
                 const nombreDato = Object.keys(formData)[0]
                 const nuevaEntrada = {
                     [nombreDato]: formData[nombreDato],
-                    "id" : result["id"]
+                    "id": result["id"]
                 }
 
                 onSubmit(nuevaEntrada);
@@ -83,3 +83,5 @@ export const DynamicForm = ({ schema, onSubmit, onCancel, initialData = {} }) =>
         </div>
     );
 };
+
+export default DynamicForm;

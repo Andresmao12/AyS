@@ -1,33 +1,37 @@
 import React, { useEffect, useState } from 'react'
-import { Sidebar } from './Components/Sidebar/Sidebar'
 import { useParams } from 'react-router-dom'
-import formData from './FormsTables.json'
-import { DynamicForm } from './Components/Form/DynamicForm/DynamicForm'
+
 import './FormsTemplate.css'
-import { AddButton } from './Components/Form/AddButton/AddButton'
-import { DataTable } from './Components/Form/DataTable/DataTable'
-import { fetchRoute } from '../../utils/helpers/fecthRoutes'
+
+//Componentes
+import Sidebar from './Components/Sidebar/Sidebar'
+import AddButton from './Components/Form/AddButton/AddButton'
+import DataTable from './Components/Form/DataTable/DataTable'
+import DynamicForm from './Components/Form/DynamicForm/DynamicForm'
 import SearchButton from './Components/Form/SearchButton/SearchButton'
-import { SearchForm } from './Components/Form/SearchForm/SearchForm'
+import SearchForm from './Components/Form/SearchForm/SearchForm'
 import UpdateModal from './Components/Form/UpdateModal/UpdateModal'
+
+// Datos y variables
+import { fetchRoute } from '../../utils/helpers/fecthRoutes'
+import formData from './FormsTables.json'
 
 export const FormsTemplate = () => {
 
     const { table } = useParams()
 
-
     const [showForm, setShowForm] = useState(false);
     const [showSearchInput, setshowSearchInput] = useState(false)
     const [showUpdateModal, setShowUpdateModal] = useState(false)
 
-    const [selectedData, setSelectedData] = useState(null);
-    const [tableData, setTableData] = useState([]);
+    const [selectedData, setSelectedData] = useState(null); // Datos del registro seleccionado para un update o delete ----> EN DESUSO
+    const [tableData, setTableData] = useState([]); // Datos de toda la tabla
 
-    const [actualUpdateValues, setactualUpdateValues] = useState({})
+    const [actualUpdateValues, setactualUpdateValues] = useState({}) // Valores nuevos de un registro antes de enviar el update
 
-    const [schema, setschema] = useState({})
-    const [columnsSchema, setcolumnsSchema] = useState([])
-    const [primaryKey, setprimaryKey] = useState('')
+    const [schema, setschema] = useState({}) // Estructura de la tabla (name, table, columnas)
+    const [columnsSchema, setcolumnsSchema] = useState([]) // Columnas de la tabla
+    const [primaryKey, setprimaryKey] = useState('') // Columna que muestra la key
 
     useEffect(() => {
         if (table) {
@@ -52,32 +56,32 @@ export const FormsTemplate = () => {
         setshowSearchInput(!showSearchInput)
     }
 
-    const handleConsultar = async (formData) => {
+
+    const fetchData = async (id = null) => {
+        /*
+            Consulta todos los registros o el id correspondiente 
+        */
+
         try {
-            const endpoint = schema.endpoints.getById
+            let endpoint = id ? schema.endpoints.getById
                 .replace('{nombreProyecto}', 'proyecto')
                 .replace('{nombreTabla}', schema.table)
                 .replace('{nombreClave}', 'id')
-                .replace('{valor}', formData.id);
-            const response = await fetch(`${fetchRoute}${endpoint}`);
-            const result = await response.json();
-            setTableData(result); // Mostrar el resultado en la tabla
-        } catch (error) {
-            console.error('Error al consultar:', error);
-            consultarTodas(schema)
-        }
-    };
+                .replace('{valor}', id)
+                :
+                schema.endpoints.getAll
+                    .replace('{nombreProyecto}', 'proyecto')
+                    .replace('{nombreTabla}', schema.table)
 
-    const consultarTodas = async (schema) => {
-        try {
-            const endpoint = schema.endpoints.getAll
-                .replace('{nombreProyecto}', 'proyecto')
-                .replace('{nombreTabla}', schema.table)
             const response = await fetch(`${fetchRoute}${endpoint}`);
             const result = await response.json();
-            setTableData(result); // Mostrar el resultado en la tabla
+            console.log("Se consulto y falta mostrar")
+            setTableData(result);
+
         } catch (error) {
             console.error('Error al consultar:', error);
+            if (id) fetchData() // ----> Validar si fue un 404?
+
         }
     }
 
@@ -186,7 +190,7 @@ export const FormsTemplate = () => {
                                 schema={schema}
                                 onSubmit={onSubmit}
                                 onCancel={() => setShowForm(false)}
-                                initialData={selectedData || {}}
+                                initialData={selectedData || {}} // ----> SIEMPRE SE PASA {} O NULL
                             />
                         )}
 
@@ -195,8 +199,8 @@ export const FormsTemplate = () => {
                                 <SearchForm
                                     schema={schema}
                                     onCancel={() => setshowSearchInput(false)}
-                                    onConsultar={handleConsultar}
-                                    initialData={selectedData || {}}
+                                    onConsultar={fetchData}
+                                    initialData={selectedData || {}} // ----> SIEMPRE SE PASA {} O NULL
 
                                 />
                             )

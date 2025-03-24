@@ -1,7 +1,7 @@
 import React from 'react'
 import './AddButton.css'
 
-export const AddButton = ({ onClick }) => {
+const AddButton = ({ onClick }) => {
     return (
         <div className='container-button'>
             <button className="add-button" onClick={onClick}>
@@ -10,3 +10,5 @@ export const AddButton = ({ onClick }) => {
         </div>
     )
 }
+
+export default AddButton

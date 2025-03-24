@@ -2,7 +2,7 @@ import React from 'react'
 import './Sidebar.css'
 import { useNavigate } from 'react-router-dom'
 
-export const Sidebar = ({ userRole = 'admin' }) => {
+const Sidebar = ({ userRole = 'admin' }) => {
 
     const navigate = useNavigate()
 
@@ -20,6 +20,10 @@ export const Sidebar = ({ userRole = 'admin' }) => {
                 <h2>Opciones</h2>
             </div>
             <ul className="sidebar-menu">
+                <li className="sidebar-menu-item" onClick={() => { navigate(`/formularios/indicadores`) }}>
+                    Indicadores
+                </li>
+                <hr className="slidebar-hr" />
                 {menuItems.map((item, index) => (
                     <li key={index} className="sidebar-menu-item" onClick={() => { navigate(`/formularios/${item}`) }} >
                         {item}
@@ -29,3 +33,5 @@ export const Sidebar = ({ userRole = 'admin' }) => {
         </div>
     )
 }
+
+export default Sidebar;

@@ -1,6 +1,6 @@
 import React, { useState } from 'react'
 
-export const SearchForm = ({ schema, onCancel, initialData = {}, onConsultar }) => {
+const SearchForm = ({ schema, onCancel, initialData = {}, onConsultar }) => {
 
     const [formData, setFormData] = useState(initialData)
 
@@ -11,7 +11,8 @@ export const SearchForm = ({ schema, onCancel, initialData = {}, onConsultar }) 
 
     const handleConsultar = async () => {
         if (onConsultar) {
-            onConsultar(formData);
+            console.log(formData)
+            onConsultar(formData.id);
         }
     };
 
@@ -55,3 +56,5 @@ export const SearchForm = ({ schema, onCancel, initialData = {}, onConsultar }) 
         </div>
     )
 }
+
+export default SearchForm;

@@ -3,16 +3,16 @@ import './DataTable.css'
 import { MdOutlineDelete } from 'react-icons/md'
 import { RxUpdate } from 'react-icons/rx'
 
-export const DataTable = ({ data, columns, onDelete, onUpdate }) => {
+const DataTable = ({ data, columns, onDelete, onUpdate }) => {
 
     const deleteRow = (row) => {
-        if(onDelete){
+        if (onDelete) {
             onDelete(row)
         }
     }
 
     const updateRow = (row) => {
-        if(onUpdate){
+        if (onUpdate) {
             onUpdate(row)
         }
     }
@@ -41,7 +41,7 @@ export const DataTable = ({ data, columns, onDelete, onUpdate }) => {
                                     size={27}
                                     color='red'
                                     cursor={'pointer'}
-                                    onClick={() => { deleteRow(row)}}
+                                    onClick={() => { deleteRow(row) }}
                                 />
                             </span>
                         </td>
@@ -50,7 +50,7 @@ export const DataTable = ({ data, columns, onDelete, onUpdate }) => {
                                 size={27}
                                 color='blue'
                                 cursor={'pointer'}
-                                onClick={() => { updateRow(row)}}
+                                onClick={() => { updateRow(row) }}
                             />
                         </td>
                     </tr>
@@ -59,3 +59,5 @@ export const DataTable = ({ data, columns, onDelete, onUpdate }) => {
         </table>
     )
 }
+
+export default DataTable

@@ -1,5 +1,30 @@
 [
     {
+        "name": "Indicador",
+        "table": "tipoindicador",
+        "fields": [
+            {
+                "name": "id",
+                "type": "number",
+                "required": false,
+                "disabled": false,
+                "primaryKey": true
+            },
+            {
+                "name": "nombre",
+                "type": "string",
+                "required": true,
+                "disabled": false
+            }
+        ],
+        "endpoints": {
+            "getAll": "/api/{nombreProyecto}/{nombreTabla}",
+            "getById": "/api/{nombreProyecto}/{nombreTabla}/{nombreClave}/{valor}",
+            "create": "/api/{nombreProyecto}/{nombreTabla}",
+            "update": "/api/{nombreProyecto}/{nombreTabla}/{nombreClave}/{valorClave}",
+            "delete": "/api/{nombreProyecto}/{nombreTabla}/{nombreClave}/{valorClave}"
+        }
+    },{
         "name": "tipo_indicador",
         "table": "tipoindicador",
         "fields": [
