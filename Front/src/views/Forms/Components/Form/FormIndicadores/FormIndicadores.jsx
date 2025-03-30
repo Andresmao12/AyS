@@ -3,9 +3,11 @@ import styles from './FormIndicadores.module.css';
 
 import { fetchRoute } from '../../../../../utils/helpers/fecthRoutes.js';
 import tableData from "../../../FormsTables.json";
+import DataTable from '../DataTable/DataTable.jsx';
 
-const IndicadorForm = ({ onSubmit, onCancel }) => {
+const FormIndicadores = ({ onUpdate, onClose, action, initialData }) => {
 
+    console.log(initialData)
     // Nombres de las entidades relacionadas a la tabla de indicadores
     let tableNameEntities = ['tipoindicador', 'unidadmedicion', 'sentido', 'frecuencia', 'articulo', 'literal', 'numeral', 'paragrafo']
 
@@ -20,19 +22,22 @@ const IndicadorForm = ({ onSubmit, onCancel }) => {
     const endpoints = tableData[0]["endpoints"] // Considerar extraer endponts en archivo aparte
 
     // Datos del indicador seleccionado
-    const [formData, setFormData] = useState({
-        codigo: '',
-        nombre: '',
-        fkidtipoindicador: '',
-        fkidunidadmedicion: '',
-        fkidsentido: '',
-        fkidfrecuencia: '',
-        fkidarticulo: '',
-        fkidliteral: '',
-        fkidnumeral: '',
-        fkidparagrafo: '',
-    });
-
+    const [formData, setFormData] = useState(() => ({
+        "codigo": initialData?.codigo || "",
+        "nombre": initialData?.nombre || "",
+        "objetivo": initialData?.objetivo || "",
+        "alcance": initialData?.alcance || "",
+        "formula": initialData?.formula || "",
+        "meta": initialData?.meta || "",
+        "fkidtipoindicador": initialData?.fkidtipoindicador || "",
+        "fkidunidadmedicion": initialData?.fkidunidadmedicion || "",
+        "fkidsentido": initialData?.fkidsentido || "",
+        "fkidfrecuencia": initialData?.fkidfrecuencia || "",
+        "fkidarticulo": initialData?.fkidarticulo || "",
+        "fkidliteral": initialData?.fkidliteral || "",
+        "fkidnumeral": initialData?.fkidnumeral || "",
+        "fkidparagrafo": initialData?.fkidparagrafo || ""
+    }));
     useEffect(() => {
         console.log("FKSS:", fks)
     }, [fks])
@@ -78,8 +83,6 @@ const IndicadorForm = ({ onSubmit, onCancel }) => {
             for (const [key, value] of Object.entries(dataObject)) {
                 auxFks[key] = value.map(item => item["id"])
             }
-
-            console.log("AUXXX: ", auxFks)
             setFks(auxFks)
         }
 
@@ -93,24 +96,28 @@ const IndicadorForm = ({ onSubmit, onCancel }) => {
 
     const handleSubmit = (e) => {
         e.preventDefault();
+        onUpdate(formData)
+        onClose()
         console.log("Datos enviados:", formData);
     };
 
 
     return (
         <div className={styles.container}>
-            <h2 className={styles.title}>Agregar Indicador</h2>
+            <h2 className={styles.title}>{action == "create" ? 'Agregar Indicador' : "Editar Indicador"}</h2>
             <form className={styles.form} onSubmit={handleSubmit}>
 
-                <div className={styles.inputGroup}>
-                    <label>Código:</label>
-                    <input type="text" name="codigo" value={formData.codigo} onChange={handleChange} className={styles.input} />
-                </div>
+                {
+                    // Mapeamos los inputs de los atributos   
+                    Object.entries(formData).map(([key, value]) =>
 
-                <div className={styles.inputGroup}>
-                    <label>Nombre:</label>
-                    <input type="text" name="nombre" value={formData.nombre} onChange={handleChange} className={styles.input} />
-                </div>
+                        !(key.startsWith("fkid")) &&
+                        <div className={styles.inputGroup}>
+                            <label>{key}:</label>
+                            <input type="text" name={key} value={value} onChange={handleChange} className={styles.input} />
+                        </div>
+                    )
+                }
 
                 {
                     // Mapeamos los inputs por cada una de las entidades relacionadas con sus respectivos ids
@@ -118,7 +125,12 @@ const IndicadorForm = ({ onSubmit, onCancel }) => {
 
                         <div className={styles.inputGroup} key={key}>
                             <label>{key}:</label>
-                            <select name="fkidtipoindicador" value={key} onChange={handleChange} className={styles.input}>
+                            <select
+                                name={`fkid${key}`}
+                                value={formData[`fkid${key}`]}
+                                onChange={handleChange}
+                                className={styles.input}>
+
                                 <option value="">Seleccione...</option>
                                 {
                                     //Mapeamos los ids de la respectiva entidad
@@ -131,14 +143,13 @@ const IndicadorForm = ({ onSubmit, onCancel }) => {
 
                     ))}
 
-
                 <div className={styles.buttonGroup}>
                     <button type="submit" className={styles.buttonPrimary}>Guardar</button>
-                    <button type="reset" className={styles.buttonSecondary} onClick={onCancel}>Cancelar</button>
+                    <button type="reset" className={styles.buttonSecondary} onClick={onClose}>Cancelar</button>
                 </div>
             </form>
         </div>
     );
 };
 
-export default IndicadorForm;
+export default FormIndicadores;

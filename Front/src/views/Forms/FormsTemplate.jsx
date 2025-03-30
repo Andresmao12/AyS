@@ -151,11 +151,12 @@ export const FormsTemplate = () => {
 
 
         try {
-            const endpoint = schema.endpoints.update
-                .replace('{nombreProyecto}', 'Proyecto')
-                .replace('{nombreTabla}', schema.table)
-                .replace('{nombreClave}', primaryKey)
-                .replace('{valorClave}', actualUpdateValues.id);
+            const endpoint = 
+                schema.endpoints.update
+                    .replace('{nombreProyecto}', 'Proyecto')
+                    .replace('{nombreTabla}', schema.table)
+                    .replace('{nombreClave}', primaryKey)
+                    .replace('{valorClave}', actualUpdateValues.id);
 
 
             const response = await fetch(`${fetchRoute}${endpoint}`, {
@@ -196,7 +197,8 @@ export const FormsTemplate = () => {
                         {showForm && (isIndicador ?
                             <FormIndicadores
                                 onSubmit={onSubmit}
-                                onCancel={() => setShowForm(false)} />
+                                onCancel={() => setShowForm(false)}
+                                action={"create"} />
                             :
                             <DynamicForm
                                 schema={schema}
@@ -217,16 +219,25 @@ export const FormsTemplate = () => {
                                 />
                             )
                         }
-                        <DataTable data={tableData} columns={columnsSchema} onDelete={handleDelete} onUpdate={handleChangeViewUpdateModal} />
 
                         {showUpdateModal && (
-                            <UpdateModal
-                                schema={schema}
+                            isIndicador ? <FormIndicadores
                                 onUpdate={onUpdate}
                                 onClose={() => setShowUpdateModal(false)}
-                                actualValues={actualUpdateValues}
+                                action={"update"}
+                                initialData={actualUpdateValues}
                             />
+                                :
+                                <UpdateModal
+                                    schema={schema}
+                                    onUpdate={onUpdate}
+                                    onClose={() => setShowUpdateModal(false)}
+                                    actualValues={actualUpdateValues}
+                                />
                         )}
+
+                        <DataTable data={tableData} columns={columnsSchema} onDelete={handleDelete} onUpdate={handleChangeViewUpdateModal} />
+
                     </>
                 )}
             </div>

@@ -11,6 +11,13 @@
                 "primaryKey": true
             },
             {
+                "name": "codigo",
+                "type": "string",
+                "required": false,
+                "disabled": false,
+                "primaryKey": false
+            },
+            {
                 "name": "nombre",
                 "type": "string",
                 "required": true,
