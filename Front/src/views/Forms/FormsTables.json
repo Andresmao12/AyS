@@ -1,7 +1,7 @@
 [
     {
         "name": "Indicador",
-        "table": "tipoindicador",
+        "table": "indicador",
         "fields": [
             {
                 "name": "id",
@@ -24,7 +24,8 @@
             "update": "/api/{nombreProyecto}/{nombreTabla}/{nombreClave}/{valorClave}",
             "delete": "/api/{nombreProyecto}/{nombreTabla}/{nombreClave}/{valorClave}"
         }
-    },{
+    },
+    {
         "name": "tipo_indicador",
         "table": "tipoindicador",
         "fields": [

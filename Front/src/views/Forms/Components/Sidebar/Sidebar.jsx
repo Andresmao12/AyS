@@ -7,7 +7,7 @@ const Sidebar = ({ userRole = 'admin' }) => {
     const navigate = useNavigate()
 
     const permissions = {
-        admin: ['tipo_indicador', 'unidad_medicion', 'reprensentacion_visual', 'tipo_actor', 'fuente', 'sentido', 'frecuencia'],
+        admin: ['Indicador', 'tipo_indicador', 'unidad_medicion', 'reprensentacion_visual', 'tipo_actor', 'fuente', 'sentido', 'frecuencia'],
         verificador: [''],
         validador: []
     }
@@ -20,14 +20,13 @@ const Sidebar = ({ userRole = 'admin' }) => {
                 <h2>Opciones</h2>
             </div>
             <ul className="sidebar-menu">
-                <li className="sidebar-menu-item" onClick={() => { navigate(`/formularios/indicadores`) }}>
-                    Indicadores
-                </li>
-                <hr className="slidebar-hr" />
                 {menuItems.map((item, index) => (
-                    <li key={index} className="sidebar-menu-item" onClick={() => { navigate(`/formularios/${item}`) }} >
-                        {item}
-                    </li>
+                    <>
+                        <li key={index} className="sidebar-menu-item" onClick={() => { navigate(`/formularios/${item}`) }} >
+                            {item}
+                        </li>
+                        {/* {(index == 0) && <hr className="slidebar-hr" />} */}
+                    </>
                 ))}
             </ul>
         </div>

@@ -11,14 +11,17 @@ import DynamicForm from './Components/Form/DynamicForm/DynamicForm'
 import SearchButton from './Components/Form/SearchButton/SearchButton'
 import SearchForm from './Components/Form/SearchForm/SearchForm'
 import UpdateModal from './Components/Form/UpdateModal/UpdateModal'
+import FormIndicadores from './Components/Form/FormIndicadores/FormIndicadores'
 
 // Datos y variables
-import { fetchRoute } from '../../utils/helpers/fecthRoutes'
+import { fetchRoute } from '../../utils/helpers/fecthRoutes.js'
 import formData from './FormsTables.json'
 
 export const FormsTemplate = () => {
 
     const { table } = useParams()
+
+    const [isIndicador, setIsIndicador] = useState(false) // Indica si el formulario es de indicadores
 
     const [showForm, setShowForm] = useState(false);
     const [showSearchInput, setshowSearchInput] = useState(false)
@@ -41,11 +44,17 @@ export const FormsTemplate = () => {
 
             setprimaryKey(primaryKey)
             setcolumnsSchema(columns)
-            consultarTodas(findTableData)
             setschema(findTableData)
+            table == "Indicador" ? setIsIndicador(true) : setIsIndicador(false)
+            console.log("SHEMA: ", findTableData)
         }
     }, [table])
 
+    useEffect(() => {
+        if (schema) {
+            handleConsultar()
+        }
+    }, [schema])
 
     const handleAdd = () => {
         setSelectedData(null);
@@ -56,8 +65,7 @@ export const FormsTemplate = () => {
         setshowSearchInput(!showSearchInput)
     }
 
-
-    const fetchData = async (id = null) => {
+    const handleConsultar = async (id = null) => {
         /*
             Consulta todos los registros o el id correspondiente 
         */
@@ -73,6 +81,10 @@ export const FormsTemplate = () => {
                     .replace('{nombreProyecto}', 'proyecto')
                     .replace('{nombreTabla}', schema.table)
 
+            console.log("FETCH: ", fetchRoute)
+            console.log("ENDPONT: ", endpoint)
+
+
             const response = await fetch(`${fetchRoute}${endpoint}`);
             const result = await response.json();
             console.log("Se consulto y falta mostrar")
@@ -80,7 +92,7 @@ export const FormsTemplate = () => {
 
         } catch (error) {
             console.error('Error al consultar:', error);
-            if (id) fetchData() // ----> Validar si fue un 404?
+            if (id) handleConsultar() // ----> Validar si fue un 404?
 
         }
     }
@@ -185,7 +197,11 @@ export const FormsTemplate = () => {
                             <AddButton onClick={handleAdd} />
                         </div>
 
-                        {showForm && (
+                        {showForm && (isIndicador ?
+                            <FormIndicadores
+                                onSubmit={onSubmit}
+                                onCancel={() => setShowForm(false)} />
+                            :
                             <DynamicForm
                                 schema={schema}
                                 onSubmit={onSubmit}
@@ -199,7 +215,7 @@ export const FormsTemplate = () => {
                                 <SearchForm
                                     schema={schema}
                                     onCancel={() => setshowSearchInput(false)}
-                                    onConsultar={fetchData}
+                                    onConsultar={handleConsultar}
                                     initialData={selectedData || {}} // ----> SIEMPRE SE PASA {} O NULL
 
                                 />
