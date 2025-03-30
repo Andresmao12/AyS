@@ -46,7 +46,6 @@ export const FormsTemplate = () => {
             setcolumnsSchema(columns)
             setschema(findTableData)
             table == "Indicador" ? setIsIndicador(true) : setIsIndicador(false)
-            console.log("SHEMA: ", findTableData)
         }
     }, [table])
 
@@ -81,14 +80,11 @@ export const FormsTemplate = () => {
                     .replace('{nombreProyecto}', 'proyecto')
                     .replace('{nombreTabla}', schema.table)
 
-            console.log("FETCH: ", fetchRoute)
-            console.log("ENDPONT: ", endpoint)
-
 
             const response = await fetch(`${fetchRoute}${endpoint}`);
-            const result = await response.json();
-            console.log("Se consulto y falta mostrar")
-            setTableData(result);
+            const data = await response.json();
+            console.log("Se consulto y falta mostrar: ", data)
+            setTableData(data);
 
         } catch (error) {
             console.error('Error al consultar:', error);
