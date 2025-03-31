@@ -197,7 +197,7 @@ export const FormsTemplate = () => {
                         {showForm && (isIndicador ?
                             <FormIndicadores
                                 onSubmit={onSubmit}
-                                onCancel={() => setShowForm(false)}
+                                onClose={() => setShowForm(false)}
                                 action={"create"} />
                             :
                             <DynamicForm

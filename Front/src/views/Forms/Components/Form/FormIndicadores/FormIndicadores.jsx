@@ -5,9 +5,9 @@ import { fetchRoute } from '../../../../../utils/helpers/fecthRoutes.js';
 import tableData from "../../../FormsTables.json";
 import DataTable from '../DataTable/DataTable.jsx';
 
-const FormIndicadores = ({ onUpdate, onClose, action, initialData }) => {
+const FormIndicadores = ({ onUpdate, onClose, onSubmit, action, initialData }) => {
 
-    console.log(initialData)
+
     // Nombres de las entidades relacionadas a la tabla de indicadores
     let tableNameEntities = ['tipoindicador', 'unidadmedicion', 'sentido', 'frecuencia', 'articulo', 'literal', 'numeral', 'paragrafo']
 
@@ -96,9 +96,53 @@ const FormIndicadores = ({ onUpdate, onClose, action, initialData }) => {
 
     const handleSubmit = (e) => {
         e.preventDefault();
-        onUpdate(formData)
-        onClose()
-        console.log("Datos enviados:", formData);
+
+        if (action == "create") {
+            const createIndicador = async () => {
+                try {
+                    const endpoint = endpoints.create
+                        .replace('{nombreProyecto}', 'proyecto')
+                        .replace('{nombreTabla}', 'indicador');
+
+                    const response = await fetch(`${fetchRoute}${endpoint}`, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify(formData),
+                    });
+
+                    if (response.status == 201) {
+
+                        const result = await response.json(); // Obtenemos el registro con ID del backend
+                        console.log(result)
+
+
+                        const nombreDato = Object.keys(formData)[0]
+                        const nombreDato2 = Object.keys(formData)[1]
+                        const nuevaEntrada = {
+                            [nombreDato]: formData[nombreDato],
+                            [nombreDato2]: formData[nombreDato2],
+                            "id": result["id"],
+
+                        }
+
+                        onSubmit(nuevaEntrada);
+                        onClose()
+                        alert(`Indicador con el id ${result["id"]} se creo exitosamente!!`)
+
+                    }
+
+                } catch (error) {
+                    console.error('Error al enviar el formulario:', error);
+                }
+            }
+            createIndicador()
+        } else if (action == "update") {
+            onUpdate(formData)
+            onClose()
+            console.log("Datos enviados:", formData);
+        }
     };
 
 
