@@ -50,7 +50,7 @@ export const FormsTemplate = () => {
     }, [table])
 
     useEffect(() => {
-        if (schema) {
+        if (schema && schema.endpoints) {
             handleConsultar()
         }
     }, [schema])
@@ -68,6 +68,10 @@ export const FormsTemplate = () => {
         /*
             Consulta todos los registros o el id correspondiente 
         */
+        if (!schema || !schema.endpoints) {
+            console.error('Schema or endpoints not defined:', schema);
+            return;
+        }
 
         try {
             let endpoint = id ? schema.endpoints.getById
@@ -87,8 +91,9 @@ export const FormsTemplate = () => {
             setTableData(data);
 
         } catch (error) {
+            console.log(error)
             console.error('Error al consultar:', error);
-            if (id) handleConsultar() // ----> Validar si fue un 404?
+            //if (id) handleConsultar() // ----> Validar si fue un 404?
 
         }
     }
@@ -151,7 +156,7 @@ export const FormsTemplate = () => {
 
 
         try {
-            const endpoint = 
+            const endpoint =
                 schema.endpoints.update
                     .replace('{nombreProyecto}', 'Proyecto')
                     .replace('{nombreTabla}', schema.table)
@@ -194,19 +199,14 @@ export const FormsTemplate = () => {
                             <AddButton onClick={handleAdd} />
                         </div>
 
-                        {showForm && (isIndicador ?
-                            <FormIndicadores
-                                onSubmit={onSubmit}
-                                onClose={() => setShowForm(false)}
-                                action={"create"} />
-                            :
+                        {showForm &&
                             <DynamicForm
                                 schema={schema}
                                 onSubmit={onSubmit}
                                 onCancel={() => setShowForm(false)}
                                 initialData={selectedData || {}} // ----> SIEMPRE SE PASA {} O NULL
                             />
-                        )}
+                        }
 
                         {
                             showSearchInput && (
@@ -221,19 +221,12 @@ export const FormsTemplate = () => {
                         }
 
                         {showUpdateModal && (
-                            isIndicador ? <FormIndicadores
+                            <UpdateModal
+                                schema={schema}
                                 onUpdate={onUpdate}
                                 onClose={() => setShowUpdateModal(false)}
-                                action={"update"}
-                                initialData={actualUpdateValues}
+                                actualValues={actualUpdateValues}
                             />
-                                :
-                                <UpdateModal
-                                    schema={schema}
-                                    onUpdate={onUpdate}
-                                    onClose={() => setShowUpdateModal(false)}
-                                    actualValues={actualUpdateValues}
-                                />
                         )}
 
                         <DataTable data={tableData} columns={columnsSchema} onDelete={handleDelete} onUpdate={handleChangeViewUpdateModal} />

@@ -31,8 +31,9 @@ const DataTable = ({ data, columns, onDelete, onUpdate }) => {
             <tbody>
                 {data.map((row, index) => (
                     <tr key={index}>
-                        {columns.map((column) => (
-                            <td key={column}>{row[column]}</td>
+                        {columns.map((column,index) => (
+                            console.log(row),
+                            <td key={index}>{row[column]}</td>
                         ))}
 
                         <td>

@@ -1,10 +1,34 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import './DynamicForm.css';
 import { fetchRoute } from '../../../../../utils/helpers/fecthRoutes';
 
 const DynamicForm = ({ schema, onSubmit, onCancel, initialData = {} }) => {
+    const [formData, setFormData] = useState(initialData);
+    const [fkOptions, setFkOptions] = useState({});
 
-    const [formData, setFormData] = useState(initialData)
+    // Cargar opciones para campos FK
+    useEffect(() => {
+        const loadFkOptions = async () => {
+            const options = {};
+            
+            for (const field of schema.fields) {
+                if (field.type === 'fk' && field.fkTable) {
+                    try {
+                        const response = await fetch(`${fetchRoute}/api/proyecto/${field.fkTable}`);
+                        const data = await response.json();
+                        options[field.name] = data;
+                    } catch (error) {
+                        console.error(`Error cargando opciones para ${field.name}:`, error);
+                        options[field.name] = [];
+                    }
+                }
+            }
+            
+            setFkOptions(options);
+        };
+
+        loadFkOptions();
+    }, [schema]);
 
     const handleChange = (e) => {
         const { name, value } = e.target;
@@ -24,23 +48,57 @@ const DynamicForm = ({ schema, onSubmit, onCancel, initialData = {} }) => {
             });
 
             if (response.status == 201) {
-
-                const result = await response.json(); // Obtenemos el registro con ID del backend
-                console.log(result)
-
-                setFormData({})
-                const nombreDato = Object.keys(formData)[0]
-                const nuevaEntrada = {
-                    [nombreDato]: formData[nombreDato],
-                    "id": result["id"]
-                }
-
-                onSubmit(nuevaEntrada);
-
+                const result = await response.json();
+                setFormData({});
+                onSubmit(result);
             }
-
         } catch (error) {
             console.error('Error al enviar el formulario:', error);
+        }
+    };
+
+    const renderField = (field) => {
+        switch (field.type) {
+            case 'string':
+                return (
+                    <input
+                        type="text"
+                        name={field.name}
+                        value={formData[field.name] || ''}
+                        onChange={handleChange}
+                        required={field.required}
+                        disabled={field.disabled || false}
+                    />
+                );
+            case 'number':
+                return (
+                    <input
+                        type="number"
+                        name={field.name}
+                        value={formData[field.name] || ''}
+                        onChange={handleChange}
+                        required={field.required}
+                        disabled={field.disabled || false}
+                    />
+                );
+            case 'fk':
+                return (
+                    <select
+                        name={field.name}
+                        value={formData[field.name] || ''}
+                        onChange={handleChange}
+                        required={field.required}
+                    >
+                        <option value="">Seleccione una opción</option>
+                        {fkOptions[field.name]?.map((option) => (
+                            <option key={option.id} value={option.id}>
+                                {option.nombre || option.descripcion}
+                            </option>
+                        ))}
+                    </select>
+                );
+            default:
+                return null;
         }
     };
 
@@ -48,30 +106,10 @@ const DynamicForm = ({ schema, onSubmit, onCancel, initialData = {} }) => {
         <div className="dynamic-form-container">
             <form className="dynamic-form" onSubmit={handleSubmit}>
                 {schema.fields.map((field) => (
-
                     field.name !== "id" && (
                         <div className="form-group" key={field.name}>
                             <label>{field.name}</label>
-                            {field.type === 'string' && (
-                                <input
-                                    type="text"
-                                    name={field.name}
-                                    value={formData[field.name] || ''}
-                                    onChange={handleChange}
-                                    required={field.required}
-                                    disabled={field.disabled ? field.disabled : false}
-                                />
-                            )}
-                            {field.type === 'number' && (
-                                <input
-                                    type="number"
-                                    name={field.name}
-                                    value={formData[field.name] || ''}
-                                    onChange={handleChange}
-                                    required={field.required}
-                                    disabled={field.disabled ? field.disabled : false}
-                                />
-                            )}
+                            {renderField(field)}
                         </div>
                     )
                 ))}

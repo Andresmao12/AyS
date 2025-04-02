@@ -14,14 +14,80 @@
                 "name": "codigo",
                 "type": "string",
                 "required": false,
-                "disabled": false,
-                "primaryKey": false
+                "disabled": false
             },
             {
                 "name": "nombre",
                 "type": "string",
-                "required": true,
-                "disabled": false
+                "required": true
+            },
+            {
+                "name": "objetivo",
+                "type": "string",
+                "required": false
+            },
+            {
+                "name": "alcance",
+                "type": "string",
+                "required": false
+            },
+            {
+                "name": "formula",
+                "type": "string",
+                "required": false
+            },
+            {
+                "name": "fkidtipoindicador",
+                "type": "fk",
+                "required": false,
+                "fkTable": "tipoindicador"
+            },
+            {
+                "name": "fkidunidadmedicion",
+                "type": "fk",
+                "required": false,
+                "fkTable": "unidadmedicion"
+            },
+            {
+                "name": "meta",
+                "type": "string",
+                "required": false
+            },
+            {
+                "name": "fkidsentido",
+                "type": "fk",
+                "required": false,
+                "fkTable": "sentido"
+            },
+            {
+                "name": "fkidfrecuencia",
+                "type": "fk",
+                "required": false,
+                "fkTable": "frecuencia"
+            },
+            {
+                "name": "fkidarticulo",
+                "type": "fk",
+                "required": false,
+                "fkTable":"articulo"
+            },
+            {
+                "name": "fkidliteral",
+                "type": "fk",
+                "required": false,
+                "fkTable":"literal"
+            },
+            {
+                "name": "fkidnumeral",
+                "type": "fk",
+                "required": false,
+                "fkTable":"numeral"
+            },
+            {
+                "name": "fkidparagrafo",
+                "type": "fk",
+                "required": false,
+                "fkTable":"paragrafo"
             }
         ],
         "endpoints": {
@@ -192,6 +258,199 @@
             },
             {
                 "name": "nombre",
+                "type": "string",
+                "required": true
+            }
+        ],
+        "endpoints": {
+            "getAll": "/api/{nombreProyecto}/{nombreTabla}",
+            "getById": "/api/{nombreProyecto}/{nombreTabla}/{nombreClave}/{valor}",
+            "create": "/api/{nombreProyecto}/{nombreTabla}",
+            "update": "/api/{nombreProyecto}/{nombreTabla}/{nombreClave}/{valorClave}",
+            "delete": "/api/{nombreProyecto}/{nombreTabla}/{nombreClave}/{valorClave}"
+        }
+    },
+    {
+        "name": "representvisualporindicador",
+        "table": "represenvisualporindicador",
+        "fields": [
+            {
+                "name": "fkdindicador",
+                "type": "fk",
+                "required": true,
+                "fkTable": "indicador",
+                "primaryKey": true
+            },
+            {
+                "name": "fkidrepresenvisual",
+                "type": "fk",
+                "required": true,
+                "fkTable": "represenvisual"
+            }
+        ],
+        "endpoints": {
+            "getAll": "/api/{nombreProyecto}/{nombreTabla}",
+            "getById": "/api/{nombreProyecto}/{nombreTabla}/{nombreClave}/{valor}",
+            "create": "/api/{nombreProyecto}/{nombreTabla}",
+            "update": "/api/{nombreProyecto}/{nombreTabla}/{nombreClave}/{valorClave}",
+            "delete": "/api/{nombreProyecto}/{nombreTabla}/{nombreClave}/{valorClave}"
+        }
+    },
+    {
+        "name": "responsablesporindicador",
+        "table": "responsablesporindicador",
+        "fields": [
+            {
+                "name": "fkidresponsable",
+                "type": "fk",
+                "required": true,
+                "fkTable": "actor",
+                "primaryKey": true
+            },
+            {
+                "name": "fkidindicador",
+                "type": "fk",
+                "required": true,
+                "fkTable":"indicador"
+            },
+            {
+                "name": "fechassignacion",
+                "type": "datetime",
+                "required": true
+            }
+        ],
+        "endpoints": {
+            "getAll": "/api/{nombreProyecto}/{nombreTabla}",
+            "getById": "/api/{nombreProyecto}/{nombreTabla}/{nombreClave}/{valor}",
+            "create": "/api/{nombreProyecto}/{nombreTabla}",
+            "update": "/api/{nombreProyecto}/{nombreTabla}/{nombreClave}/{valorClave}",
+            "delete": "/api/{nombreProyecto}/{nombreTabla}/{nombreClave}/{valorClave}"
+        }
+    },
+    {
+        "name": "actor",
+        "table": "actor",
+        "fields": [
+            {
+                "name": "id",
+                "type": "string",
+                "required": true,
+                "primaryKey": true
+            },
+            {
+                "name": "nombre",
+                "type": "string",
+                "required": true
+            },
+            {
+                "name": "fkidtipoactor",
+                "type": "fk",
+                "required": true,
+                "fkTable": "tipoactor"
+            }
+        ],
+        "endpoints": {
+            "getAll": "/api/{nombreProyecto}/{nombreTabla}",
+            "getById": "/api/{nombreProyecto}/{nombreTabla}/{nombreClave}/{valor}",
+            "create": "/api/{nombreProyecto}/{nombreTabla}",
+            "update": "/api/{nombreProyecto}/{nombreTabla}/{nombreClave}/{valorClave}",
+            "delete": "/api/{nombreProyecto}/{nombreTabla}/{nombreClave}/{valorClave}"
+        }
+    },
+    {
+        "name": "fuentes_por_indicador",
+        "table": "fuentesporindicador",
+        "fields": [
+            {
+                "name": "fkidfuente",
+                "type": "number",
+                "required": true,
+                "primaryKey": true,
+                "fkTable": "fuente"
+            },
+            {
+                "name": "fkidindicador",
+                "type": "number",
+                "required": true,
+                "fkTable":"indicador"
+            }
+        ],
+        "endpoints": {
+            "getAll": "/api/{nombreProyecto}/{nombreTabla}",
+            "getById": "/api/{nombreProyecto}/{nombreTabla}/{nombreClave}/{valor}",
+            "create": "/api/{nombreProyecto}/{nombreTabla}",
+            "update": "/api/{nombreProyecto}/{nombreTabla}/{nombreClave}/{valorClave}",
+            "delete": "/api/{nombreProyecto}/{nombreTabla}/{nombreClave}/{valorClave}"
+        }
+    },
+    {
+        "name": "variablesporindicador",
+        "table": "variablesporindicador",
+        "fields": [
+            {
+                "name": "id",
+                "type": "number",
+                "required": true,
+                "primaryKey": true
+            },
+            {
+                "name": "fkidvariable",
+                "type": "fk",
+                "required": true,
+                "fkTable": "variable"
+            },
+            {
+                "name": "fkidindicador",
+                "type": "fk",
+                "required": true,
+                "fkTable": "indicador"
+            },
+            {
+                "name": "dato",
+                "type": "number",
+                "required": true
+            },
+            {
+                "name": "fkemailusuario",
+                "type": "string",
+                "required": true
+            },
+            {
+                "name": "fechadato",
+                "type": "datetime",
+                "required": true
+            }
+        ],
+        "endpoints": {
+            "getAll": "/api/{nombreProyecto}/{nombreTabla}",
+            "getById": "/api/{nombreProyecto}/{nombreTabla}/{nombreClave}/{valor}",
+            "create": "/api/{nombreProyecto}/{nombreTabla}",
+            "update": "/api/{nombreProyecto}/{nombreTabla}/{nombreClave}/{valorClave}",
+            "delete": "/api/{nombreProyecto}/{nombreTabla}/{nombreClave}/{valorClave}"
+        }
+    },
+    {
+        "name": "variable",
+        "table": "variable",
+        "fields": [
+            {
+                "name": "id",
+                "type": "number",
+                "required": true,
+                "primaryKey": true
+            },
+            {
+                "name": "nombre",
+                "type": "string",
+                "required": true
+            },
+            {
+                "name": "fecharcacion",
+                "type": "datetime",
+                "required": true
+            },
+            {
+                "name": "fkemailusuario",
                 "type": "string",
                 "required": true
             }
