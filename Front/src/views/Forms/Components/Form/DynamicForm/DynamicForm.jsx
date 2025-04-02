@@ -49,6 +49,7 @@ const DynamicForm = ({ schema, onSubmit, onCancel, initialData = {} }) => {
 
             if (response.status == 201) {
                 const result = await response.json();
+                window.location.reload()
                 setFormData({});
                 onSubmit(result);
             }

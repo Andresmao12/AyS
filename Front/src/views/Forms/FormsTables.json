@@ -69,25 +69,25 @@
                 "name": "fkidarticulo",
                 "type": "fk",
                 "required": false,
-                "fkTable":"articulo"
+                "fkTable": "articulo"
             },
             {
                 "name": "fkidliteral",
                 "type": "fk",
                 "required": false,
-                "fkTable":"literal"
+                "fkTable": "literal"
             },
             {
                 "name": "fkidnumeral",
                 "type": "fk",
                 "required": false,
-                "fkTable":"numeral"
+                "fkTable": "numeral"
             },
             {
                 "name": "fkidparagrafo",
                 "type": "fk",
                 "required": false,
-                "fkTable":"paragrafo"
+                "fkTable": "paragrafo"
             }
         ],
         "endpoints": {
@@ -275,7 +275,7 @@
         "table": "represenvisualporindicador",
         "fields": [
             {
-                "name": "fkdindicador",
+                "name": "fkidindicador",
                 "type": "fk",
                 "required": true,
                 "fkTable": "indicador",
@@ -285,7 +285,8 @@
                 "name": "fkidrepresenvisual",
                 "type": "fk",
                 "required": true,
-                "fkTable": "represenvisual"
+                "fkTable": "represenvisual",
+                "primaryKey": true
             }
         ],
         "endpoints": {
@@ -293,7 +294,7 @@
             "getById": "/api/{nombreProyecto}/{nombreTabla}/{nombreClave}/{valor}",
             "create": "/api/{nombreProyecto}/{nombreTabla}",
             "update": "/api/{nombreProyecto}/{nombreTabla}/{nombreClave}/{valorClave}",
-            "delete": "/api/{nombreProyecto}/{nombreTabla}/{nombreClave}/{valorClave}"
+            "delete": "/api/{nombreProyecto}/{nombreTabla}/compuesto"
         }
     },
     {
@@ -311,7 +312,8 @@
                 "name": "fkidindicador",
                 "type": "fk",
                 "required": true,
-                "fkTable":"indicador"
+                "fkTable": "indicador",
+                "primaryKey": true
             },
             {
                 "name": "fechassignacion",
@@ -324,7 +326,7 @@
             "getById": "/api/{nombreProyecto}/{nombreTabla}/{nombreClave}/{valor}",
             "create": "/api/{nombreProyecto}/{nombreTabla}",
             "update": "/api/{nombreProyecto}/{nombreTabla}/{nombreClave}/{valorClave}",
-            "delete": "/api/{nombreProyecto}/{nombreTabla}/{nombreClave}/{valorClave}"
+            "delete": "/api/{nombreProyecto}/{nombreTabla}/compuesto"
         }
     },
     {
@@ -372,7 +374,8 @@
                 "name": "fkidindicador",
                 "type": "number",
                 "required": true,
-                "fkTable":"indicador"
+                "primaryKey": true,
+                "fkTable": "indicador"
             }
         ],
         "endpoints": {
@@ -380,7 +383,7 @@
             "getById": "/api/{nombreProyecto}/{nombreTabla}/{nombreClave}/{valor}",
             "create": "/api/{nombreProyecto}/{nombreTabla}",
             "update": "/api/{nombreProyecto}/{nombreTabla}/{nombreClave}/{valorClave}",
-            "delete": "/api/{nombreProyecto}/{nombreTabla}/{nombreClave}/{valorClave}"
+            "delete": "/api/{nombreProyecto}/{nombreTabla}/compuesto"
         }
     },
     {
@@ -445,7 +448,7 @@
                 "required": true
             },
             {
-                "name": "fecharcacion",
+                "name": "fechacreacion",
                 "type": "datetime",
                 "required": true
             },

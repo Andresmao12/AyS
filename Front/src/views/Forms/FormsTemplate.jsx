@@ -87,7 +87,6 @@ export const FormsTemplate = () => {
 
             const response = await fetch(`${fetchRoute}${endpoint}`);
             const data = await response.json();
-            console.log("Se consulto y falta mostrar: ", data)
             setTableData(data);
 
         } catch (error) {
@@ -103,38 +102,72 @@ export const FormsTemplate = () => {
     }
 
     const handleDelete = async (row) => {
-        const value = row[primaryKey]
+        // Obtener todos los campos que son primaryKey
+        const primaryKeys = schema.fields.filter(field => field.primaryKey);
 
-        const endpoint = schema.endpoints.delete
-            .replace('{nombreProyecto}', 'proyecto')
-            .replace('{nombreTabla}', schema.table)
-            .replace('{nombreClave}', primaryKey)
-            .replace('{valorClave}', value);
+        // Determinar si es una tabla con clave compuesta
+        const isCompositeKey = primaryKeys.length > 1;
 
         try {
-            const response = await fetch(`${fetchRoute}${endpoint}`, {
-                method: 'Delete',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-            });
+            let endpoint, options;
 
-            if (response.status === 200) {
-                setTableData((prevData) =>
-                    prevData.filter((row) => row.id !== value)
-                );
-                alert("Eliminado con exito")
+            if (isCompositeKey) {
+                // Para claves compuestas
+                endpoint = schema.endpoints.delete
+                    .replace('{nombreProyecto}', 'proyecto')
+                    .replace('{nombreTabla}', schema.table);
+
+                // Crear objeto con los pares clave-valor
+                const deleteParams = {};
+                primaryKeys.forEach(keyField => {
+                    // Convertir todos los valores a string
+                    deleteParams[keyField.name] = String(row[keyField.name]);
+                });
+
+                options = {
+                    method: 'DELETE',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(deleteParams)
+                };
             } else {
-                alert(response)
+                // Para clave simple
+                const primaryKey = primaryKeys[0].name;
+                const value = row[primaryKey];
+
+                endpoint = schema.endpoints.delete
+                    .replace('{nombreProyecto}', 'proyecto')
+                    .replace('{nombreTabla}', schema.table)
+                    .replace('{nombreClave}', primaryKey)
+                    .replace('{valorClave}', value);
+
+                options = {
+                    method: 'DELETE'
+                };
             }
 
+            const response = await fetch(`${fetchRoute}${endpoint}`, options);
+
+            if (response.ok) {
+                setTableData(prevData =>
+                    prevData.filter(item => {
+                        const isExactMatch = primaryKeys.every(keyField =>
+                            item[keyField.name] == row[keyField.name]
+                        );
+                        return !isExactMatch; // Mantener si NO es coincidencia exacta
+                    })
+                );
+                alert("Eliminado con éxito");
+            } else {
+                const errorData = await response.json();
+                alert(`Error: ${errorData.title || response.statusText}`);
+            }
         } catch (error) {
-            console.error(error)
-            alert('Ha ocurrido un error')
+            console.error(error);
+            alert('Ha ocurrido un error al eliminar');
         }
-
-
-    }
+    };
 
     const handleChangeViewUpdateModal = (row) => {
         setactualUpdateValues(row)

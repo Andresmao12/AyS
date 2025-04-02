@@ -11,7 +11,6 @@ const SearchForm = ({ schema, onCancel, initialData = {}, onConsultar }) => {
 
     const handleConsultar = async () => {
         if (onConsultar) {
-            console.log(formData)
             onConsultar(formData.id);
         }
     };
