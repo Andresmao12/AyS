@@ -10,7 +10,7 @@ const DynamicForm = ({ schema, onSubmit, onCancel, initialData = {} }) => {
     useEffect(() => {
         const loadFkOptions = async () => {
             const options = {};
-            
+
             for (const field of schema.fields) {
                 if (field.type === 'fk' && field.fkTable) {
                     try {
@@ -23,7 +23,7 @@ const DynamicForm = ({ schema, onSubmit, onCancel, initialData = {} }) => {
                     }
                 }
             }
-            
+
             setFkOptions(options);
         };
 
@@ -81,6 +81,19 @@ const DynamicForm = ({ schema, onSubmit, onCancel, initialData = {} }) => {
                         required={field.required}
                         disabled={field.disabled || false}
                     />
+                );
+            case 'datetime':
+                return (
+                    <input
+                        type='date'
+                        name={field.name}
+                        value={formData[field.name] || ''}
+                        onChange={handleChange}
+                        required={field.required}
+                    >
+
+                    </input>
+
                 );
             case 'fk':
                 return (

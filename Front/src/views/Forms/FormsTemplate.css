@@ -17,7 +17,9 @@
 .content {
   flex-grow: 1; /* Ocupa el espacio restante */
   padding: 20px;
-  background-color: #f9f9f9; /* Color de fondo del contenido */
+  /* background-color: #f9f9f9; Color de fondo del contenido */
+  background-color: #222;
+  color: #fff !important  ;
   overflow-y: auto; /* Permite el desplazamiento vertical si es necesario */
 }
 
