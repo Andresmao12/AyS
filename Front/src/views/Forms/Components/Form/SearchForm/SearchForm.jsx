@@ -1,6 +1,7 @@
 import React, { useState } from 'react'
+import { fetchRoute } from '../../../../../utils/helpers/fecthRoutes';
 
-const SearchForm = ({ schema, onCancel, initialData = {}, onConsultar }) => {
+const SearchForm = ({ schema, onCancel, initialData = {}, onConsultar, onConsultarFk }) => {
 
     const [formData, setFormData] = useState(initialData)
 
@@ -10,50 +11,45 @@ const SearchForm = ({ schema, onCancel, initialData = {}, onConsultar }) => {
     };
 
     const handleConsultar = async () => {
-        if (onConsultar) {
-            onConsultar(formData.id);
+        if (hasIdField) {
+            if (onConsultar) {
+                onConsultar(formData.id);
+            }
+        } else {
+            if (onConsultarFk) {
+                onConsultarFk(formData)
+            }
         }
     };
+
+    const hasIdField = schema.fields.some(field => field.name === "id");
+
+    const fieldsToRender = hasIdField
+        ? schema.fields.filter(field => field.name === "id")
+        : schema.fields.filter(field => field.type === "fk");
 
 
     return (
         <div className="dynamic-form-container">
-            <form className="dynamic-form">
-                {schema.fields.map((field) => (
-
-                    field.name == "id" && (
-                        <div className="form-group" key={field.name}>
-                            <label>{field.name}</label>
-                            {field.type === 'string' && (
-                                <input
-                                    type="text"
-                                    name={field.name}
-                                    value={formData[field.name] || ''}
-                                    onChange={handleChange}
-                                    required={field.required}
-                                    disabled={field.disabled ? field.disabled : false}
-                                />
-                            )}
-                            {field.type === 'number' && (
-                                <input
-                                    type="number"
-                                    name={field.name}
-                                    value={formData[field.name] || ''}
-                                    onChange={handleChange}
-                                    required={field.required}
-                                    disabled={field.disabled ? field.disabled : false}
-                                />
-                            )}
-                        </div>
-                    )
+            <form className="dynamic-form" onSubmit={(e) => e.preventDefault()}>
+                {fieldsToRender.map((field) => (
+                    <div className="form-group" key={field.name}>
+                        <label>{field.name}</label>
+                        <input
+                            type="number"
+                            name={field.name}
+                            value={formData[field.name] || ''}
+                            onChange={handleChange}
+                            required={field.required}
+                            disabled={field.disabled ?? false}
+                        />
+                    </div>
                 ))}
-                <div className="form-actions">
-                    <button type="button" className="consultar-button" onClick={handleConsultar}>Consultar</button>
-                    <button type="button" className="cancel-button" onClick={onCancel}>Cancelar</button>
-                </div>
+
+                <button className='consultar-button ' type="button" onClick={handleConsultar}>Consultar</button>
             </form>
         </div>
-    )
+    );
 }
 
 export default SearchForm;

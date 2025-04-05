@@ -316,7 +316,7 @@
                 "primaryKey": true
             },
             {
-                "name": "fechassignacion",
+                "name": "fechaasignacion",
                 "type": "datetime",
                 "required": true
             }
@@ -337,7 +337,9 @@
                 "name": "id",
                 "type": "string",
                 "required": true,
-                "primaryKey": true
+                "primaryKey": true,
+                "isNecesary": true
+                
             },
             {
                 "name": "nombre",
@@ -365,14 +367,14 @@
         "fields": [
             {
                 "name": "fkidfuente",
-                "type": "number",
+                "type": "fk",
                 "required": true,
                 "primaryKey": true,
                 "fkTable": "fuente"
             },
             {
                 "name": "fkidindicador",
-                "type": "number",
+                "type": "fk",
                 "required": true,
                 "primaryKey": true,
                 "fkTable": "indicador"

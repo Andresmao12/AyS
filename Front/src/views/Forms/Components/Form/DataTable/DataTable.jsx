@@ -17,6 +17,10 @@ const DataTable = ({ data, columns, onDelete, onUpdate }) => {
         }
     }
 
+
+    const hasIdField = columns.some(field => field === "id");
+    console.log(data)
+
     return (
         <table className="data-table">
             <thead>
@@ -25,13 +29,15 @@ const DataTable = ({ data, columns, onDelete, onUpdate }) => {
                         <th key={column}>{column}</th>
                     ))}
                     <th>Eliminar</th>
-                    <th>Actualizar</th>
+                    {
+                        hasIdField && <th>Actualizar</th>
+                    }
                 </tr>
             </thead>
             <tbody>
                 {data.map((row, index) => (
                     <tr key={index}>
-                        {columns.map((column,index2) => (
+                        {columns.map((column, index2) => (
                             <td key={index2}>{row[column]}</td>
                         ))}
 
@@ -45,14 +51,20 @@ const DataTable = ({ data, columns, onDelete, onUpdate }) => {
                                 />
                             </span>
                         </td>
-                        <td>
-                            <RxUpdate
-                                size={27}
-                                color='blue'
-                                cursor={'pointer'}
-                                onClick={() => { updateRow(row) }}
-                            />
-                        </td>
+
+                        {
+                            hasIdField && <td>
+                                <span>
+                                    <RxUpdate
+                                        size={27}
+                                        color='blue'
+                                        cursor={'pointer'}
+                                        onClick={() => { updateRow(row) }}
+                                    />
+                                </span>
+                            </td>
+                        }
+
                     </tr>
                 ))}
             </tbody>

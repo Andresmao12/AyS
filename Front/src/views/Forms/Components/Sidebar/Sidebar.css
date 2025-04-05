@@ -34,3 +34,10 @@
   opacity: .4;
   margin: 8px 0;
 }
+
+.exit{
+  background-color: #e74c3c;
+  color: white;
+  border: none;
+  cursor: pointer;
+}

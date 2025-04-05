@@ -270,6 +270,146 @@ namespace ProyectoBackendCsharp.Controllers
             }
         }
 
+        [AllowAnonymous]
+
+        [HttpPost("filtrar/compuesto")]
+        public IActionResult ObtenerPorClaves(string nombreProyecto, string nombreTabla, [FromBody] Dictionary<string, string> claves)
+        {
+            if (string.IsNullOrWhiteSpace(nombreTabla) || claves == null || claves.Count == 0)
+            {
+                return BadRequest("El nombre de la tabla y las claves no pueden estar vacíos.");
+            }
+
+            controlConexion.AbrirBd();
+            try
+            {
+                string proveedor = _configuration["DatabaseProvider"] ?? throw new InvalidOperationException("Proveedor de base de datos no configurado.");
+
+                var condiciones = new List<string>();
+                var parametrosConsulta = new List<DbParameter>();
+
+                int contador = 0;
+                foreach (var clave in claves)
+                {
+                    string nombreClave = clave.Key;
+                    string valor = clave.Value;
+
+                    // Detectar tipo de dato de la columna
+                    string tipoSQL = "SELECT data_type FROM information_schema.columns WHERE table_name = @nombreTabla AND column_name = @nombreColumna";
+                    var parametrosTipo = new DbParameter[]
+                    {
+                CrearParametro("@nombreTabla", nombreTabla),
+                CrearParametro("@nombreColumna", nombreClave)
+                    };
+
+                    var resultadoTipoDato = controlConexion.EjecutarConsultaSql(tipoSQL, parametrosTipo);
+                    if (resultadoTipoDato == null || resultadoTipoDato.Rows.Count == 0 || resultadoTipoDato.Rows[0]["data_type"] == DBNull.Value)
+                    {
+                        return NotFound($"No se pudo determinar el tipo de dato de la columna '{nombreClave}'.");
+                    }
+
+                    string tipoDato = resultadoTipoDato.Rows[0]["data_type"]?.ToString() ?? "";
+
+                    if (string.IsNullOrEmpty(tipoDato))
+                    {
+                        return NotFound($"No se pudo determinar el tipo de dato de la columna '{nombreClave}'.");
+                    }
+
+                    object valorConvertido;
+                    string nombreParametro = $"@param{contador++}";
+
+                    switch (tipoDato.ToLower())
+                    {
+                        case "int":
+                        case "bigint":
+                        case "smallint":
+                        case "tinyint":
+                            if (!int.TryParse(valor, out int valEntero))
+                                return BadRequest($"Valor inválido para '{nombreClave}' como entero.");
+                            valorConvertido = valEntero;
+                            break;
+
+                        case "decimal":
+                        case "numeric":
+                        case "money":
+                        case "smallmoney":
+                            if (!decimal.TryParse(valor, out decimal valDecimal))
+                                return BadRequest($"Valor inválido para '{nombreClave}' como decimal.");
+                            valorConvertido = valDecimal;
+                            break;
+
+                        case "bit":
+                            if (!bool.TryParse(valor, out bool valBool))
+                                return BadRequest($"Valor inválido para '{nombreClave}' como booleano.");
+                            valorConvertido = valBool;
+                            break;
+
+                        case "float":
+                        case "real":
+                            if (!double.TryParse(valor, out double valDouble))
+                                return BadRequest($"Valor inválido para '{nombreClave}' como flotante.");
+                            valorConvertido = valDouble;
+                            break;
+
+                        case "nvarchar":
+                        case "varchar":
+                        case "nchar":
+                        case "char":
+                        case "text":
+                            valorConvertido = valor;
+                            break;
+
+                        case "date":
+                        case "datetime":
+                        case "datetime2":
+                        case "smalldatetime":
+                            if (!DateTime.TryParse(valor, out DateTime valFecha))
+                                return BadRequest($"Valor inválido para '{nombreClave}' como fecha.");
+                            valorConvertido = valFecha.Date;
+                            break;
+
+                        default:
+                            return BadRequest($"Tipo de dato no soportado: {tipoDato}");
+                    }
+
+                    condiciones.Add($"{nombreClave} = {nombreParametro}");
+                    parametrosConsulta.Add(CrearParametro(nombreParametro, valorConvertido));
+                }
+
+                string whereClause = string.Join(" AND ", condiciones);
+                string consultaFinal = $"SELECT * FROM {nombreTabla} WHERE {whereClause}";
+
+                Console.WriteLine($"Ejecutando: {consultaFinal}");
+
+                var resultado = controlConexion.EjecutarConsultaSql(consultaFinal, parametrosConsulta.ToArray());
+
+                if (resultado.Rows.Count > 0)
+                {
+                    var lista = new List<Dictionary<string, object?>>();
+                    foreach (DataRow fila in resultado.Rows)
+                    {
+                        var registro = resultado.Columns.Cast<DataColumn>()
+                                        .ToDictionary(col => col.ColumnName, col => fila[col] == DBNull.Value ? null : fila[col]);
+                        lista.Add(registro);
+                    }
+
+                    return Ok(lista);
+                }
+
+                return NotFound();
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error: {ex.Message}");
+                return StatusCode(500, $"Error interno del servidor: {ex.Message}");
+            }
+            finally
+            {
+                controlConexion.CerrarBd();
+            }
+        }
+
+
         // Método para crear un parámetro de consulta SQL basado en el proveedor de base de datos.
         // Este método ayuda a evitar inyecciones SQL y manejar valores nulos de manera segura.
         //[ApiExplorerSettings(IgnoreApi = true)] // Indica que este método no debe ser documentado en Swagger.
@@ -568,7 +708,7 @@ namespace ProyectoBackendCsharp.Controllers
                             valor = kvp.Value.GetInt32(); // o GetDouble() para decimales
                             break;
                         case JsonValueKind.String:
-                            valor = kvp.Value.GetString() ;
+                            valor = kvp.Value.GetString();
                             break;
                         case JsonValueKind.True:
                         case JsonValueKind.False:

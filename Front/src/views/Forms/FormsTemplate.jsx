@@ -220,6 +220,43 @@ export const FormsTemplate = () => {
         }
     }
 
+    const onSubmitSearchFk = async (formData) => {
+        const validarVacios = (obj) => {
+            return Object.values(obj).some(value =>
+                value !== null &&
+                value !== undefined &&
+                (typeof value === 'string' ? value.trim() !== '' : true)
+            );
+        };
+
+        if (Object.keys(formData).length == 0 || !validarVacios(formData)) {
+            const endpoint = schema.endpoints.getAll
+                .replace('{nombreProyecto}', 'proyecto')
+                .replace('{nombreTabla}', schema.table)
+
+            const response = await fetch(`${fetchRoute}${endpoint}`);
+            const data = await response.json();
+            setTableData(data);
+
+        } else {
+            const endpoint = `/api/{nombreProyecto}/{nombreTabla}/filtrar/compuesto`
+                .replace('{nombreProyecto}', 'proyecto').replace('{nombreTabla}', schema.table);
+
+            const response = await fetch(`${fetchRoute}${endpoint}`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(formData),
+            });
+            const data = await response.json();
+
+            setTableData(data);
+        }
+
+
+    }
+
     return (
         <div className='app'>
             <Sidebar />
@@ -247,6 +284,7 @@ export const FormsTemplate = () => {
                                     schema={schema}
                                     onCancel={() => setshowSearchInput(false)}
                                     onConsultar={handleConsultar}
+                                    onConsultarFk={onSubmitSearchFk}
                                     initialData={selectedData || {}} // ----> SIEMPRE SE PASA {} O NULL
 
                                 />

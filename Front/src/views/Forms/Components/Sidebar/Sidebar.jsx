@@ -45,6 +45,10 @@ const Sidebar = ({ userRole = 'admin' }) => {
                         </li>
                     </>
                 ))}
+
+                <li className='sidebar-menu-item exit' onClick={() => { navigate('/') }}>
+                    Cerrar Sesion
+                </li>
             </ul>
         </div>
     )

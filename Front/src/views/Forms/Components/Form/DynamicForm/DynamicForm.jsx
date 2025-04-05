@@ -10,7 +10,7 @@ const DynamicForm = ({ schema, onSubmit, onCancel, initialData = {} }) => {
     useEffect(() => {
         const loadFkOptions = async () => {
             const options = {};
-            
+
             for (const field of schema.fields) {
                 if (field.type === 'fk' && field.fkTable) {
                     try {
@@ -23,7 +23,7 @@ const DynamicForm = ({ schema, onSubmit, onCancel, initialData = {} }) => {
                     }
                 }
             }
-            
+
             setFkOptions(options);
         };
 
@@ -98,8 +98,29 @@ const DynamicForm = ({ schema, onSubmit, onCancel, initialData = {} }) => {
                         ))}
                     </select>
                 );
+
+            case 'datetime':
+                return (
+                    <input
+                        type="datetime-local"
+                        name={field.name}
+                        value={formData[field.name] || ''}
+                        onChange={handleChange}
+                        required={field.required}
+                        disabled={field.disabled || false}
+                    />
+                );
             default:
-                return null;
+                return (
+                    <input
+                        type="text"
+                        name={field.name}
+                        value={formData[field.name] || ''}
+                        onChange={handleChange}
+                        required={field.required}
+                        disabled={field.disabled || false}
+                    />
+                );
         }
     };
 
@@ -107,7 +128,7 @@ const DynamicForm = ({ schema, onSubmit, onCancel, initialData = {} }) => {
         <div className="dynamic-form-container">
             <form className="dynamic-form" onSubmit={handleSubmit}>
                 {schema.fields.map((field) => (
-                    field.name !== "id" && (
+                    (field.name !== "id" || (field.name == "id" && field.isNecesary)  ) && (
                         <div className="form-group" key={field.name}>
                             <label>{field.name}</label>
                             {renderField(field)}
