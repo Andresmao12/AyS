@@ -82,6 +82,19 @@ const DynamicForm = ({ schema, onSubmit, onCancel, initialData = {} }) => {
                         disabled={field.disabled || false}
                     />
                 );
+            case 'datetime':
+                return (
+                    <input
+                        type='date'
+                        name={field.name}
+                        value={formData[field.name] || ''}
+                        onChange={handleChange}
+                        required={field.required}
+                    >
+
+                    </input>
+
+                );
             case 'fk':
                 return (
                     <select
