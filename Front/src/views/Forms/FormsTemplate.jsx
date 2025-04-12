@@ -16,6 +16,7 @@ import FormIndicadores from './Components/Form/FormIndicadores/FormIndicadores'
 // Datos y variables
 import { fetchRoute } from '../../utils/helpers/fecthRoutes.js'
 import formData from './FormsTables.json'
+import { Indicadores } from './Components/Form/Indicadores/Indicadores.jsx'
 
 export const FormsTemplate = () => {
 
@@ -263,49 +264,54 @@ export const FormsTemplate = () => {
 
             <div className="content">
                 {Object.keys(schema).length !== 0 && (
-                    <>
-                        <div className='flex-row-end'>
-                            <SearchButton onClick={handleSearch} />
-                            <AddButton onClick={handleAdd} />
-                        </div>
+                    schema.name == "Indicador" ?
+                        <Indicadores />
+                        : (
+                            <>
+                                <div className='flex-row-end'>
+                                    <SearchButton onClick={handleSearch} />
+                                    <AddButton onClick={handleAdd} />
+                                </div>
 
-                        {showForm &&
-                            <DynamicForm
-                                schema={schema}
-                                onSubmit={onSubmit}
-                                onCancel={() => setShowForm(false)}
-                                initialData={selectedData || {}} // ----> SIEMPRE SE PASA {} O NULL
-                            />
-                        }
+                                {showForm &&
+                                    <DynamicForm
+                                        schema={schema}
+                                        onSubmit={onSubmit}
+                                        onCancel={() => setShowForm(false)}
+                                        initialData={selectedData || {}} // ----> SIEMPRE SE PASA {} O NULL
+                                    />
+                                }
 
-                        {
-                            showSearchInput && (
-                                <SearchForm
-                                    schema={schema}
-                                    onCancel={() => setshowSearchInput(false)}
-                                    onConsultar={handleConsultar}
-                                    onConsultarFk={onSubmitSearchFk}
-                                    initialData={selectedData || {}} // ----> SIEMPRE SE PASA {} O NULL
+                                {
+                                    showSearchInput && (
+                                        <SearchForm
+                                            schema={schema}
+                                            onCancel={() => setshowSearchInput(false)}
+                                            onConsultar={handleConsultar}
+                                            onConsultarFk={onSubmitSearchFk}
+                                            initialData={selectedData || {}} // ----> SIEMPRE SE PASA {} O NULL
 
-                                />
-                            )
-                        }
+                                        />
+                                    )
+                                }
 
-                        {showUpdateModal && (
-                            <UpdateModal
-                                schema={schema}
-                                onUpdate={onUpdate}
-                                onClose={() => setShowUpdateModal(false)}
-                                actualValues={actualUpdateValues}
-                            />
-                        )}
+                                {showUpdateModal && (
+                                    <UpdateModal
+                                        schema={schema}
+                                        onUpdate={onUpdate}
+                                        onClose={() => setShowUpdateModal(false)}
+                                        actualValues={actualUpdateValues}
+                                    />
+                                )}
 
-                        <DataTable data={tableData} columns={columnsSchema} onDelete={handleDelete} onUpdate={handleChangeViewUpdateModal} />
+                                <DataTable data={tableData} columns={columnsSchema} onDelete={handleDelete} onUpdate={handleChangeViewUpdateModal} />
 
-                    </>
+                            </>
+                        )
+
                 )}
             </div>
 
-        </div>
+        </div >
     )
 }
