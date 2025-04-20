@@ -37,6 +37,80 @@ export const Indicadores = () => {
         setshowModalCreate(!showModalCreate)
     }
 
+    const handleCrearIndicador = async () => {
+        try {
+
+            console.log("SE APRETO CREAR IND")
+
+            // Creamos el indicador
+            const resp = await fetch(`${fetchRoute}/api/proyecto/indicador`, {
+                method: "POST",
+                body: JSON.stringify({ ...formData }),
+                headers: { "Content-Type": "application/json" }
+            });
+
+            // Tomamos el id de indicador
+            const idIndicador = await resp.json();
+
+            // Tomamos los obj con los demas id
+            const datosAgregadosFilt = Object.fromEntries(
+                Object.entries(datosAgregados).filter(
+                    ([_, value]) => Array.isArray(value) && value.length > 0
+                )
+            );
+
+            console.log('DATOS AGREGADOS: ', datosAgregadosFilt)
+
+            // Iteramos los obj q contienen los id de los datos agregados nombretabla : { nombrecolumna : id }
+            for (const [entidad, idObj] of Object.entries(datosAgregadosFilt)) {
+
+                // Definimos los nombres de tabla y columna
+                const nombreTablaRelacion = `${entidad.toLowerCase()}porindicador`
+                const nombreColumna = tipos[entidad][0]['name']
+
+                console.log('IDOBJ: ', idObj)
+
+                for (const [_, id] of Object.entries(idObj)) {
+
+                    console.log("ENTIDAD:", entidad, "ID", id)
+                    console.log("NOMBRE COLUMNA:", idIndicador, "NOMBRE TABLA", JSON.stringify(id))
+
+                    const relacion = {
+                        'fkidindicador': Object.values(idIndicador)[0],
+                        [nombreColumna]: Object.values(id)[0]
+                    };
+
+                    const resp = await fetch(`${fetchRoute}/api/proyecto/${nombreTablaRelacion}`, {
+                        method: "POST",
+                        body: JSON.stringify(relacion),
+                        headers: { "Content-Type": "application/json" }
+                    });
+
+                }
+
+
+            }
+
+            // console.log('Datos completos indicador: ', indicadorCompleto);
+
+            // Limpiar formularios
+            setFormData({});
+            setDatosAgregados({
+                Responsables: [],
+                Fuentes: [],
+                RepresentacionVisual: [],
+                Variables: [],
+                Resultado: []
+            });
+            setshowModalCreate(false); // cerrar modal
+
+        } catch (error) {
+            console.error("Error al crear indicador:", error);
+            alert("Ocurrió un error al crear el indicador");
+        }
+    };
+
+
     const loadFkOptions = async () => {
         const options = {};
 
@@ -266,6 +340,8 @@ export const Indicadores = () => {
                                     <button type="button" onClick={handleAgregarDato}>
                                         Agregar
                                     </button>
+
+
                                 </div>
                             )}
 
@@ -297,6 +373,9 @@ export const Indicadores = () => {
                                     ) : null
                                 )}
                             </div>
+                            <button type="button" onClick={handleCrearIndicador}>
+                                Crear Indicador
+                            </button>
                         </div>
                     </div>
                 )

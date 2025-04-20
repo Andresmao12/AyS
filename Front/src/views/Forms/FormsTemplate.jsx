@@ -255,7 +255,6 @@ export const FormsTemplate = () => {
             setTableData(data);
         }
 
-
     }
 
     return (
