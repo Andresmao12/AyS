@@ -18,16 +18,11 @@ const Login = () => {
                     <input type="password" placeholder="Contraseña" required></input>
                     <FaLock className={styles.icon} />
                 </div>
-                <div className={styles.recordar}>
-                    <label>
-                        <input type="checkbox"/>
-                        <a href="#"> Recordar contraseña</a>
-                    </label>
-                </div>
                 <button type="submit" onClick={() => navigate("/formularios")}>Ingresar</button>
 
                 <div className={styles.registrarCuenta}>
-                    <p>No tiene una cuenta? <a href="#">Registrarse</a></p>
+                    <span className={styles.RegresarLogin} onClick={() => navigate("/registro")}>
+                        ¿No tienes una cuenta? <b>Registrarse</b></span>
                 </div>
             </form>
         </div>

@@ -57,6 +57,18 @@
     font-size: 16px;
 }
 
+.login .recordar{
+    display: flex;
+    justify-content: space-between;
+    font-size: 14.5px;
+    margin: -15px 0 15px;
+}
+
+.recordar label input{
+    accent-color: #fff;
+    margin-right: 4px;
+}
+
 .recordar a{
     color: #fff;
     text-decoration: none;
@@ -96,4 +108,3 @@
     text-decoration: underline;
     cursor: pointer;
 }
-

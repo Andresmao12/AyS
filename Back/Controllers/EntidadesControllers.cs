@@ -908,6 +908,108 @@ namespace ProyectoBackendCsharp.Controllers
             }
         }
 
+        /// <summary>
+        /// Crea un nuevo registro en la tabla especificada con los datos proporcionados
+        /// y asigna automáticamente el rol "invitado" (5) si la tabla es "usuario".
+        /// </summary>
+        /// <param name="nombreProyecto">Nombre del proyecto al que pertenece la tabla.</param>
+        /// <param name="nombreTabla">Nombre de la tabla en la base de datos.</param>
+        /// <param name="datosEntidad">Diccionario con los datos de la entidad a insertar.</param>
+        /// <returns>Un mensaje de éxito si la inserción es correcta, o un código de error en caso de fallo.</returns>
+        /// <response code="200">Devuelve un mensaje indicando que la entidad fue creada exitosamente.</response>
+        /// <response code="400">El nombre de la tabla o los datos de la entidad están vacíos.</response>
+        /// <response code="500">Error interno del servidor.</response>
+        [AllowAnonymous]
+        [HttpPost("usuario")]
+        public IActionResult CrearUsuario(
+            string nombreProyecto,
+            string nombreTabla,
+            [FromBody] Dictionary<string, object?> datosEntidad)
+        {
+            if (string.IsNullOrWhiteSpace(nombreTabla) || datosEntidad == null || !datosEntidad.Any())
+                return BadRequest("El nombre de la tabla y los datos de la entidad no pueden estar vacíos.");
+
+            try
+            {
+                // 1) Convertir JSON a tipos C#
+                var propiedades = datosEntidad.ToDictionary(
+                    kvp => kvp.Key,
+                    kvp => kvp.Value is JsonElement je ? ConvertirJsonElement(je) : kvp.Value
+                );
+
+                // 2) Si es usuario, eliminar posibles campos de FK que no existan en la tabla usuario
+                if (nombreTabla.Equals("usuario", StringComparison.OrdinalIgnoreCase))
+                {
+                    propiedades.Remove("fkidusuario");
+                    propiedades.Remove("fkemail");
+                }
+
+                // 3) Detectar campos de contraseña (opcional)
+                var clavesContrasena = new[] { "password", "contrasena", "passw", "clave" };
+                var claveContrasena = propiedades.Keys.FirstOrDefault(k =>
+                    clavesContrasena.Any(pk => k.IndexOf(pk, StringComparison.OrdinalIgnoreCase) >= 0)
+                );
+
+                // 4) Datos de conexión y armado de SQL dinámico
+                string proveedor = _configuration["DatabaseProvider"]
+                    ?? throw new InvalidOperationException("Proveedor de base de datos no configurado.");
+                string columnas = string.Join(",", propiedades.Keys);
+                string valores = string.Join(",", propiedades.Keys.Select(k => $"{ObtenerPrefijoParametro(proveedor)}{k}"));
+                string consultaSQL =
+                    $"INSERT INTO {nombreTabla} ({columnas}) VALUES ({valores}); SELECT SCOPE_IDENTITY();";
+
+                // 5) Crear parámetros para el INSERT
+                var parametros = propiedades.Select(p =>
+                    CrearParametro($"{ObtenerPrefijoParametro(proveedor)}{p.Key}", p.Value)
+                ).ToArray();
+
+                // 6) Logging
+                Console.WriteLine($"Ejecutando SQL: {consultaSQL}");
+                foreach (var p in parametros)
+                    Console.WriteLine($"{p.ParameterName} = {p.Value}, DbType: {p.DbType}");
+
+                // 7) Ejecutar INSERT y obtener ID
+                controlConexion.AbrirBd();
+                var idGenerated = controlConexion.EjecutarFuncion(consultaSQL, parametros);
+                controlConexion.CerrarBd();
+
+                // 8) Si es tabla usuario, insertar rol invitado (5) usando fkemail
+                if (nombreTabla.Equals("usuario", StringComparison.OrdinalIgnoreCase)
+                    && propiedades.ContainsKey("email")
+                    && idGenerated != null)
+                {
+                    const string sqlRol =
+                        "INSERT INTO rol_usuario (fkemail, fkidrol) VALUES (@email, @idRol);";
+                    var parametrosRol = new[]
+                    {
+                        // Usar email original o idGenerated convertido a string si es necesario
+                        CrearParametro("@email", propiedades["email"] ?? idGenerated),
+                        CrearParametro("@idRol", 5)
+                    };
+
+                    controlConexion.AbrirBd();
+                    controlConexion.EjecutarFuncion(sqlRol, parametrosRol);
+                    controlConexion.CerrarBd();
+                }
+
+                // 9) Devolver respuesta al cliente
+                if (idGenerated != null)
+                    return CreatedAtAction(
+                        nameof(CrearUsuario),
+                        new { id = idGenerated },
+                        new { id = idGenerated }
+                    );
+                else
+                    return StatusCode(500, "Error al obtener el ID del nuevo registro.");
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Ocurrió una excepción: {ex.Message}");
+                controlConexion.CerrarBd();
+                return StatusCode(500, $"Error interno del servidor: {ex.Message}");
+            }
+        }
+
     }
 }
 
