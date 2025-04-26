@@ -3,66 +3,71 @@ import { fetchRoute } from '../../utils/helpers/fecthRoutes.js';
 import { useNavigate } from "react-router-dom";
 import styles from './Login.module.css';
 import { FaUser, FaLock } from "react-icons/fa";
+import { MdArrowBack } from "react-icons/md";
 
 const Login = () => {
     const navigate = useNavigate();
     const [email, setEmail] = useState('');
     const [contrasena, setContrasena] = useState('');
 
-    
-const handleLogin = async (e) => {
-     e.preventDefault();
-    
-     const response = await fetch(`${fetchRoute}/api/proyecto/usuario/login`, {
-     method: "POST",
-     headers: {
-     "Content-Type": "application/json"
-     },
-     body: JSON.stringify({ email, contrasena })
-     });
-    
-     if (response.ok) {
-        const data = await response.json();
-        // Guarda los datos del usuario y los roles en localStorage
-        localStorage.setItem("usuario", JSON.stringify(data));
-        localStorage.setItem("rol", data.rol); 
-        navigate("/formularios");
+
+    const handleLogin = async (e) => {
+        e.preventDefault();
+
+        const response = await fetch(`${fetchRoute}/api/proyecto/usuario/login`, {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify({ email, contrasena })
+        });
+
+        if (response.ok) {
+            const data = await response.json();
+            // Guarda los datos del usuario y los roles en localStorage
+            localStorage.setItem("usuario", JSON.stringify(data));
+            localStorage.setItem("rol", data.rol);
+            navigate("/formularios");
         } else {
-        alert("Usuario o contraseña incorrecta");
+            alert("Usuario o contraseña incorrecta");
         }
     };
-    
+
 
     return (
         <div className={styles.login}>
+            <MdArrowBack className={styles.backIcon} onClick={() => navigate("/")} />
             <form onSubmit={handleLogin}>
                 <h1>Bienvenido</h1>
-                <div className={styles.cajatexto}>
+                <div className={styles.inpCont}>
                     <input
-                        type="text"
-                        placeholder="Correo electrónico"
+                        id="inp-email"
+                        placeholder=" "
                         required
                         value={email}
                         onChange={(e) => setEmail(e.target.value)}
                     />
+                    <label htmlFor="inp-email">Correo</label>
                     <FaUser className={styles.icon} />
                 </div>
-                <div className={styles.cajatexto}>
+
+                <div className={styles.inpCont}>
                     <input
+                        id="inp-password"
                         type="password"
-                        placeholder="Contraseña"
+                        placeholder=" "
                         required
                         value={contrasena}
                         onChange={(e) => setContrasena(e.target.value)}
                     />
+                    <label htmlFor="inp-password">Contraseña</label>
                     <FaLock className={styles.icon} />
                 </div>
                 <button type="submit">Ingresar</button>
-                <div className={styles.registrarCuenta}>
-                    <span className={styles.RegresarLogin} onClick={() => navigate("/registro")}>
-                        ¿No tienes una cuenta? <b>Registrarse</b>
-                    </span>
-                </div>
+
+                <span className={styles.RegresarLogin} onClick={() => navigate("/registro")}>
+                    ¿No tienes una cuenta? <a>Registrarse</a>
+                </span>
             </form>
         </div>
     );
