@@ -21,7 +21,8 @@ const Sidebar = ({ userRole = 'admin' }) => {
             'actor',
             'fuentes_por_indicador',
             'variablesporindicador',
-            'variable'
+            'variable',
+            'Usuarios'
         ],
         verificador: [''],
         validador: []

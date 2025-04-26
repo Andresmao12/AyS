@@ -13,7 +13,7 @@ const Login = () => {
 const handleLogin = async (e) => {
      e.preventDefault();
     
-     const response = await fetch(`${fetchRoute}/api/api/usuario/login`, {
+     const response = await fetch(`${fetchRoute}/api/proyecto/usuario/login`, {
      method: "POST",
      headers: {
      "Content-Type": "application/json"

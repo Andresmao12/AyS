@@ -2,6 +2,8 @@ import React, { useEffect, useState } from 'react'
 import './Indicadores.css'
 import Schemas from '../../../FormsTables.json'
 import { fetchRoute } from '../../../../../utils/helpers/fecthRoutes';
+import { MdOutlineDelete } from 'react-icons/md';
+import { RxUpdate } from 'react-icons/rx';
 
 const tipos = {
     Responsables: [
@@ -30,15 +32,20 @@ export const Indicadores = () => {
     const [fkOptions, setFkOptions] = useState([])
     const [rol, setRol] = useState('');
 
+    const [columns, setcolumns] = useState(Schemas[0].fields.map((field) => field.name))
+    const [tableData, setTableData] = useState([]); // Datos de toda la tabla
+
+
     useEffect(() => {
-            const storedRol = localStorage.getItem('rol');
-            if (storedRol) {
-                setRol(storedRol);
-            }
-        }, []);
+        const storedRol = localStorage.getItem('rol');
+        if (storedRol) {
+            setRol(storedRol);
+        }
+    }, []);
 
     useEffect(() => {
         loadFkOptions()
+        handleConsultar()
     }, [])
 
     const handleChangeShowFormCreate = () => {
@@ -155,6 +162,25 @@ export const Indicadores = () => {
 
         setFkOptions(options);
     };
+
+    const handleConsultar = async (id = null) => {
+        try {
+            let endpoint = Schemas[0].endpoints.getAll
+                .replace('{nombreProyecto}', 'proyecto')
+                .replace('{nombreTabla}', Schemas[0].table);
+
+
+            const response = await fetch(`${fetchRoute}${endpoint}`);
+            const data = await response.json();
+            setTableData(data);
+
+        } catch (error) {
+            console.log(error)
+            console.error('Error al consultar:', error);
+            //if (id) handleConsultar() // ----> Validar si fue un 404?
+
+        }
+    }
 
     /* MODAL */
 
@@ -277,14 +303,14 @@ export const Indicadores = () => {
         <div>
             {/* HEADER */}
             <header>
-            {rol==='admin' &&(
-                <button onClick={handleChangeShowFormCreate}>Crear Indicador</button>
-            )}
+                {rol === 'admin' && (
+                    <button onClick={handleChangeShowFormCreate}>Crear Indicador</button>
+                )}
                 <button>Buscar</button>
             </header>
 
 
-            {rol==='admin'&& (
+            {rol === 'admin' && (
                 showModalCreate && (
                     <div className='container-modal'>
                         <div className='close-modal' onClick={handleChangeShowFormCreate}></div>
@@ -347,14 +373,14 @@ export const Indicadores = () => {
 
                                         </div>
                                     ))}
-                                    
+
                                     <button type="button" onClick={handleAgregarDato}>
                                         Agregar
                                     </button>
 
 
                                 </div>
-                                    
+
                             )}
 
                             {/* 🗃 Mostrar tablas de datos agregados */}
@@ -384,17 +410,62 @@ export const Indicadores = () => {
                                         </div>
                                     ) : null
                                 )}
-                            
+
                             </div>
-                            
+
                             <button type="button" onClick={handleCrearIndicador}>
                                 Crear Indicador
                             </button>
                         </div>
-                        
+
                     </div>
                 )
             )}
+
+            <table className="data-table">
+                <thead>
+                    <tr>
+                        {columns.map((column) => (
+                            <th key={column}>{column}</th>
+                        ))}
+                        {rol.includes('admin') && <th>Eliminar</th>}
+                        {(rol.includes('admin') || rol.includes('Validador')) && <th>Actualizar</th>}
+                    </tr>
+                </thead>
+                <tbody>
+                    {tableData.map((row, index) => (
+                        <tr key={index}>
+                            {columns.map((column, index2) => (
+                                <td key={index2}>{row[column]}</td>
+                            ))}
+                            {rol === 'admin' && (
+                                <td>
+                                    <span>
+                                        <MdOutlineDelete
+                                            size={27}
+                                            color='red'
+                                            cursor={'pointer'}
+                                            onClick={() => { deleteRow(row) }}
+                                        />
+                                    </span>
+                                </td>
+                            )}
+                            {(rol.includes('admin') || rol.includes('Validador'))  && (
+                                <td>
+                                    <span>
+                                        <RxUpdate
+                                            size={27}
+                                            color='blue'
+                                            cursor={'pointer'}
+                                            onClick={() => { updateRow(row) }}
+                                        />
+                                    </span>
+                                </td>
+                            )}
+                        </tr>
+                    ))}
+                </tbody>
+            </table>
 
         </div>
     )
