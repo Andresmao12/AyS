@@ -1,9 +1,9 @@
 import React from 'react'
-import styles from './Banner1.module.css'
+import styles from './BannerPpal.module.css'
 import { useNavigate } from 'react-router-dom'
 import { FaArrowRight } from "react-icons/fa";
 
-function Banner1() {
+function BannerPpal() {
 
     const navigate = useNavigate();
 
@@ -20,4 +20,4 @@ function Banner1() {
     )
 }
 
-export default Banner1
+export default BannerPpal

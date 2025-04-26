@@ -1,0 +1,48 @@
+.container {
+    height: 100vh;
+    padding: 3em 1em;
+    text-align: center;
+
+    display: flex;
+    flex-direction: column;
+    gap: 1em;
+}
+
+.container h2 {
+    font-size: 46px;
+}
+
+.content {
+    display: flex;
+    align-items: center;
+    gap: 1em;
+
+    flex-grow: 1;
+}
+
+.cardCont {
+    height: 80%;
+     
+    overflow: hidden;
+    flex-grow: 1;
+    display: flex;
+    gap: 2em;
+
+    align-items: center;
+    justify-content: center;
+    position: relative;
+
+    transition: transform 0.5s ease;
+}
+
+
+.arrow {
+    width: 2em;
+    height: 2em;
+    cursor: pointer;
+    transition: transform 0.2s;
+}
+
+.arrow:hover {
+    transform: scale(1.3);
+}
