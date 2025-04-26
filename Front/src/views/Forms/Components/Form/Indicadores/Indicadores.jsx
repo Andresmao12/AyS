@@ -28,6 +28,14 @@ export const Indicadores = () => {
     const [showModalCreate, setshowModalCreate] = useState(false)
     const [formData, setFormData] = useState({})
     const [fkOptions, setFkOptions] = useState([])
+    const [rol, setRol] = useState('');
+
+    useEffect(() => {
+            const storedRol = localStorage.getItem('rol');
+            if (storedRol) {
+                setRol(storedRol);
+            }
+        }, []);
 
     useEffect(() => {
         loadFkOptions()
@@ -269,12 +277,14 @@ export const Indicadores = () => {
         <div>
             {/* HEADER */}
             <header>
+            {rol==='admin' &&(
                 <button onClick={handleChangeShowFormCreate}>Crear Indicador</button>
+            )}
                 <button>Buscar</button>
             </header>
 
 
-            {
+            {rol==='admin'&& (
                 showModalCreate && (
                     <div className='container-modal'>
                         <div className='close-modal' onClick={handleChangeShowFormCreate}></div>
@@ -337,12 +347,14 @@ export const Indicadores = () => {
 
                                         </div>
                                     ))}
+                                    
                                     <button type="button" onClick={handleAgregarDato}>
                                         Agregar
                                     </button>
 
 
                                 </div>
+                                    
                             )}
 
                             {/* 🗃 Mostrar tablas de datos agregados */}
@@ -372,14 +384,17 @@ export const Indicadores = () => {
                                         </div>
                                     ) : null
                                 )}
+                            
                             </div>
+                            
                             <button type="button" onClick={handleCrearIndicador}>
                                 Crear Indicador
                             </button>
                         </div>
+                        
                     </div>
                 )
-            }
+            )}
 
         </div>
     )

@@ -931,26 +931,26 @@ namespace ProyectoBackendCsharp.Controllers
 
             try
             {
-                // 1) Convertir JSON a tipos C#
+                //Convertir JSON a tipos C#
                 var propiedades = datosEntidad.ToDictionary(
                     kvp => kvp.Key,
                     kvp => kvp.Value is JsonElement je ? ConvertirJsonElement(je) : kvp.Value
                 );
 
-                // 2) Si es usuario, eliminar posibles campos de FK que no existan en la tabla usuario
+                // Si es usuario, eliminar posibles campos de FK que no existan en la tabla usuario
                 if (nombreTabla.Equals("usuario", StringComparison.OrdinalIgnoreCase))
                 {
                     propiedades.Remove("fkidusuario");
                     propiedades.Remove("fkemail");
                 }
 
-                // 3) Detectar campos de contraseña (opcional)
+                //Detectar campos de contraseña (opcional)
                 var clavesContrasena = new[] { "password", "contrasena", "passw", "clave" };
                 var claveContrasena = propiedades.Keys.FirstOrDefault(k =>
                     clavesContrasena.Any(pk => k.IndexOf(pk, StringComparison.OrdinalIgnoreCase) >= 0)
                 );
 
-                // 4) Datos de conexión y armado de SQL dinámico
+                //Datos de conexión y armado de SQL dinámico
                 string proveedor = _configuration["DatabaseProvider"]
                     ?? throw new InvalidOperationException("Proveedor de base de datos no configurado.");
                 string columnas = string.Join(",", propiedades.Keys);
@@ -984,7 +984,7 @@ namespace ProyectoBackendCsharp.Controllers
                     {
                         // Usar email original o idGenerated convertido a string si es necesario
                         CrearParametro("@email", propiedades["email"] ?? idGenerated),
-                        CrearParametro("@idRol", 5)
+                        CrearParametro("@idRol", 2)
                     };
 
                     controlConexion.AbrirBd();
@@ -1006,6 +1006,98 @@ namespace ProyectoBackendCsharp.Controllers
             {
                 Console.WriteLine($"Ocurrió una excepción: {ex.Message}");
                 controlConexion.CerrarBd();
+                return StatusCode(500, $"Error interno del servidor: {ex.Message}");
+            }
+        }
+        
+        /// <summary>
+        /// Maneja el login de usuarios en la aplicación.
+        /// </summary>
+        /// <param name="nombreProyecto">Nombre del proyecto al que pertenece la tabla.</param>
+        /// <param name="nombreTabla">Nombre de la tabla en la base de datos.</param>
+        /// <param name="datosEntidad">Diccionario con los datos de la entidad a verificar (correo electrónico y contraseña).</param>
+        /// <returns>Un mensaje de éxito si el login es correcto, o un código de error en caso de fallo.</returns>
+        /// <response code="200">Devuelve un mensaje indicando que el login fue exitoso.</response>
+        /// <response code="400">El nombre de la tabla o los datos de la entidad están vacíos.</response>
+        /// <response code="401">Credenciales incorrectas.</response>
+        /// <response code="500">Error interno del servidor.</response>
+        [AllowAnonymous]
+        [HttpPost("login")]
+        public IActionResult Login(string nombreProyecto, string nombreTabla, [FromBody] Dictionary<string, object?> datosEntidad)
+        {
+            // Verifica si el nombre de la tabla es nulo o vacío, o si los datos a verificar están vacíos.
+            if (string.IsNullOrWhiteSpace(nombreTabla) || datosEntidad == null || !datosEntidad.Any())
+                return BadRequest("El nombre de la tabla y los datos de la entidad no pueden estar vacíos.");
+
+            try
+            {
+                var propiedades = datosEntidad.ToDictionary(
+                    kvp => kvp.Key,
+                    kvp => kvp.Value is JsonElement elementoJson
+                        ? ConvertirJsonElement(elementoJson)
+                        : kvp.Value
+                );
+
+                var clavesContrasena = new[] { "password", "contrasena", "passw", "clave" };
+                var claveContrasena = propiedades.Keys.FirstOrDefault(k =>
+                    clavesContrasena.Any(pk => k.IndexOf(pk, StringComparison.OrdinalIgnoreCase) >= 0)
+                );
+
+                if (claveContrasena != null)
+                {
+                    var contrasenaPlano = propiedades[claveContrasena]?.ToString();
+                    if (!string.IsNullOrEmpty(contrasenaPlano))
+                    {
+                        var correoElectronico = propiedades["email"]?.ToString();
+                        if (string.IsNullOrEmpty(correoElectronico))
+                        {
+                            return BadRequest("El correo electrónico no puede estar vacío.");
+                        }
+
+                        // Consulta para verificar si el usuario existe
+                        string consultaUsuarioSQL = $"SELECT {claveContrasena} FROM {nombreTabla} WHERE email = @email";
+                        var parametrosUsuario = new[] { CrearParametro("@email", correoElectronico) };
+
+                        controlConexion.AbrirBd();
+                        var resultadoUsuario = controlConexion.EjecutarFuncion(consultaUsuarioSQL, parametrosUsuario);
+                        controlConexion.CerrarBd();
+
+                        if (resultadoUsuario != null && contrasenaPlano == resultadoUsuario.ToString())
+                        {
+                            // Consulta para obtener el rol del usuario
+                            string consultaRolSQL = @"
+                                SELECT r.nombre
+                                FROM rol_usuario ru
+                                JOIN rol r ON ru.fkidrol = r.id
+                                WHERE ru.fkemail = @email";
+                            var parametrosRol = new[] { CrearParametro("@email", correoElectronico) };
+
+                            controlConexion.AbrirBd();
+                            var resultadoRol = controlConexion.EjecutarFuncion(consultaRolSQL, parametrosRol);
+                            controlConexion.CerrarBd();
+
+                            if (resultadoRol != null)
+                            {
+                                var usuario = new { email = correoElectronico, rol = resultadoRol.ToString() };
+                                return Ok(usuario);
+                            }
+                            else
+                            {
+                                return Unauthorized("Rol no encontrado.");
+                            }
+                        }
+                        else
+                        {
+                            return Unauthorized("Credenciales incorrectas.");
+                        }
+                    }
+                }
+
+                return BadRequest("No se proporcionó una contraseña válida.");
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Ocurrió una excepción: {ex.Message}");
                 return StatusCode(500, $"Error interno del servidor: {ex.Message}");
             }
         }

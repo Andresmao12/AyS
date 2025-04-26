@@ -6,6 +6,7 @@ const UpdateModal = ({ schema, onUpdate, onClose, actualValues }) => {
     const [formData, setFormData] = useState(actualValues);
     const [fkOptions, setFkOptions] = useState({});
     const [loading, setLoading] = useState(true);
+    
 
     // Cargar opciones para campos FK
     useEffect(() => {
@@ -131,6 +132,7 @@ const UpdateModal = ({ schema, onUpdate, onClose, actualValues }) => {
                                 </div>
                             )
                         ))}
+                        
                         <div className="form-actions">
                             <button type="submit" className="submit-button">Guardar</button>
                             <button type="button" className="cancel-button" onClick={onClose}>Cancelar</button>
