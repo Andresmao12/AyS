@@ -4,9 +4,13 @@ import Nav from "./Components/Nav/Nav.jsx"
 import BannerPpal from "./Components/BannerPpal/BannerPpal.jsx"
 import BannerAbout from "./Components/BannerAbout/BannerAbout.jsx"
 import BannerServices from "./Components/BannerServices/BannerServices.jsx"
+import BannerMember from "./Components/BannerMember/BannerMember.jsx"
 import Footer from "./Components/Footer/Footer.jsx"
 
 const Landing = () => {
+
+  let descriptionTemp = 'Lorem ipsum dolor sit amet consectetur adipisicing elit. Omnis eum corrupti architecto rerum at, cupiditate, minus minima, id ipsum voluptates tempore eius reiciendis. Illum labore voluptatem soluta cumque veniam voluptatum!'
+
   return (
     <>
       <Nav />
@@ -14,6 +18,10 @@ const Landing = () => {
         <BannerPpal />
         <BannerAbout />
         <BannerServices />
+        <h1 className={styles.membersTitle}>Integrantes</h1>
+        <BannerMember name='Vanessa Espinosa' description={descriptionTemp} />
+        <BannerMember name='Andres David Orozco' description={descriptionTemp} direction='right' />
+        <BannerMember name='Andres Agudelo Elorza' description={descriptionTemp} />
       </main>
       <Footer />
     </>

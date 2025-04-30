@@ -18,29 +18,46 @@
     flex-grow: 1;
     gap: 15px;
 
-    z-index: 5;
+    animation: sideInImg linear both;
+    animation-timeline: view();
+    animation-range: entry 20% cover 60%;
 
     & h1 {
         font-size: 50px;
     }
 
-    & p{
+    & p {
         max-width: 80%;
     }
 }
-
+    
 
 .container img {
     max-width: 40vw;
-    /* align-self: flex-end; */
+
+    animation: sideInImg linear both;
+    animation-timeline: view();
+    animation-range: entry 20% cover 60%;
 }
 
 
-
-@keyframes initialBlur {
-    to {
-        filter: blur(0);
+@keyframes sideInImg {
+    from {
+        opacity: 0;
     }
 
+    to {
+        opacity: 1;
+    }
+}
 
+
+@keyframes sideInText {
+    from {
+        opacity: 0;
+    }
+
+    to {
+        opacity: 1;
+    }
 }
