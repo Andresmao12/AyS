@@ -6,6 +6,10 @@
 
     display: flex;
     align-items: center;
+
+    animation: sideIn linear both;
+    animation-timeline: view();
+    animation-range: entry 40% cover 60%;
 }
 
 .container_textCont {
@@ -18,10 +22,6 @@
     flex-grow: 1;
     gap: 15px;
 
-    animation: sideInImg linear both;
-    animation-timeline: view();
-    animation-range: entry 20% cover 60%;
-
     & h1 {
         font-size: 50px;
     }
@@ -30,29 +30,12 @@
         max-width: 80%;
     }
 }
-    
 
 .container img {
     max-width: 40vw;
-
-    animation: sideInImg linear both;
-    animation-timeline: view();
-    animation-range: entry 20% cover 60%;
 }
 
-
-@keyframes sideInImg {
-    from {
-        opacity: 0;
-    }
-
-    to {
-        opacity: 1;
-    }
-}
-
-
-@keyframes sideInText {
+@keyframes sideIn {
     from {
         opacity: 0;
     }
