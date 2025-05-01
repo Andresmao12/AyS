@@ -5,44 +5,21 @@
 
     display: flex;
     flex-direction: column;
-    gap: 1em;
+    align-items: center;
+    gap: 3em;
 }
 
 .container h2 {
     font-size: 46px;
+
 }
 
-.content {
-    display: flex;
-    align-items: center;
-    gap: 1em;
+.gridCont {
+    height: 100%;
 
-    flex-grow: 1;
-}
-
-.cardCont {
-    height: 80%;
-     
-    overflow: hidden;
-    flex-grow: 1;
-    display: flex;
-    gap: 2em;
-
-    align-items: center;
-    justify-content: center;
-    position: relative;
-
-    transition: transform 0.5s ease;
-}
-
-
-.arrow {
-    width: 2em;
-    height: 2em;
-    cursor: pointer;
-    transition: transform 0.2s;
-}
-
-.arrow:hover {
-    transform: scale(1.3);
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    grid-template-rows: repeat(2, 1fr);
+    grid-auto-rows: 1fr;
+    gap: 3em;
 }
