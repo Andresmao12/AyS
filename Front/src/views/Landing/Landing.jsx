@@ -6,6 +6,7 @@ import BannerAbout from "./Components/BannerAbout/BannerAbout.jsx"
 import BannerServices from "./Components/BannerServices/BannerServices.jsx"
 import BannerMember from "./Components/BannerMember/BannerMember.jsx"
 import BannerVideo from "./Components/BannerVideo/BannerVideo.jsx"
+import BannerContact from "./Components/BannerContact/BannerContact.jsx"
 import Footer from "./Components/Footer/Footer.jsx"
 
 const Landing = () => {
@@ -24,6 +25,7 @@ const Landing = () => {
         <BannerMember name='Andres David Orozco' description={descriptionTemp} direction='right' />
         <BannerMember name='Andres Agudelo Elorza' description={descriptionTemp} />
         <BannerVideo />
+        <BannerContact />
       </main>
       <Footer />
     </>
