@@ -28,6 +28,10 @@ const Sidebar = ({ userRole = 'admin' }) => {
         validador: []
     };
 
+    const handleCerrarSesion = () => {
+        navigate('/')
+        window.localStorage.clear()
+    }
 
     const menuItems = permissions[userRole] || [];
 
@@ -47,7 +51,7 @@ const Sidebar = ({ userRole = 'admin' }) => {
                     </>
                 ))}
 
-                <li className='sidebar-menu-item exit' onClick={() => { navigate('/') }}>
+                <li className='sidebar-menu-item exit' onClick={handleCerrarSesion}>
                     Cerrar Sesion
                 </li>
             </ul>

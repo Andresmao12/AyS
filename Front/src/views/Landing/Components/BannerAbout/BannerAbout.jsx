@@ -4,7 +4,7 @@ import styles from './BannerAbout.module.css'
 function BannerAbout() {
 
     return (
-        <section className={styles.container}>
+        <section className={styles.container} id='about'>
             {/* <img src="/equipoCorporativo.png" alt="" /> */}
             <img src="https://media.gettyimages.com/id/1212238415/photo/argentina-health-virus-capybaras.jpg?b=1&s=594x594&w=0&k=20&c=HuAxI4kn4TFI551BQbyfQAJprFf8kR1YV9LfjJ33M7o=" alt="equipo corporativo" />
             <div className={styles.container_textCont}>

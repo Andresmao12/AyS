@@ -21,7 +21,7 @@ const BannerContact = () => {
     }
 
     return (
-        <section className={styles.container}>
+        <section className={styles.container} id="contact">
             <div className={styles.contColumns}>
                 <div className={styles.column}>
                     <h3>Contáctanos</h3>

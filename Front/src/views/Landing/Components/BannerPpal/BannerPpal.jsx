@@ -8,7 +8,7 @@ function BannerPpal() {
     const navigate = useNavigate();
 
     return (
-        <section className={styles.container}>
+        <section className={styles.container} id='main'>
             <div className={styles.container_textCont}>
                 <h1>Proyecto Aplicaciones y Servicios Web</h1>
                 <button className={styles.btnLogin} onClick={() => navigate("/login")} ><span>Start <FaArrowRight className={styles.btnLogin_arrow}/>
