@@ -20,18 +20,18 @@ const Router = () => {
     <BrowserRouter>
       <Routes>
         <Route path="/" element={<Landing />} />
-        <Route path="/login" element={<Login onLogin={() => setIsAuthenticated(true)} />} />
+        <Route path="/login" element={<Login />} />
         <Route path="/registro" element={<Registro />} />
         <Route
           path="/formularios"
           element={
-            isAuthenticated ? <FormsTemplate /> : <Navigate to="/login" />
+            isAuthenticated ? <FormsTemplate /> : <Login />
           }
         />
         <Route
           path="/formularios/:table"
           element={
-            isAuthenticated ? <FormsTemplate /> : <Navigate to="/login" />
+            isAuthenticated ? <FormsTemplate /> : <Login />
           }
         />
       </Routes>
