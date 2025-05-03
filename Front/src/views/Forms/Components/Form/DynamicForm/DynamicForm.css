@@ -3,7 +3,8 @@
 }
 
 .dynamic-form {
-  background-color: #fff;
+  background-color: var(--background-component);
+  color: var(--text-color);
   padding: 20px;
   border-radius: 8px;
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
@@ -17,7 +18,7 @@
   display: block;
   font-size: 14px;
   font-weight: 600;
-  color: #333;
+  color: var(--text-color); 
   margin-bottom: 8px;
 }
 
@@ -27,16 +28,17 @@
   padding: 10px;
   font-size: 14px;
   border: 1px solid #ccc;
+  color: var(--text-color);
   border-radius: 4px;
-  background-color: #fff;
+  background-color: var(--input-background-color);
   transition: border-color 0.3s ease;
 }
 
 .form-group input:focus,
 .form-group select:focus {
-  border-color: #007bff;
+  border-color: var(--secondary-color);
   outline: none;
-  box-shadow: 0 0 5px rgba(0, 123, 255, 0.5);
+  box-shadow: 0 0 30px -20px var(--aux-first-color);
 }
 
 .form-actions {
@@ -57,25 +59,25 @@
 }
 
 .submit-button {
-  background-color: #007bff;
+  background-color: var(--info-color);
   color: white;
 }
 
 .submit-button:hover {
-  background-color: #0056b3;
+  background-color: var(--info-color-hv);
 }
 
 .cancel-button {
-  background-color: #6c757d;
+  background-color: var(--error-color);
   color: white;
 }
 
 .cancel-button:hover {
-  background-color: #5a6268;
+  background-color: var(--error-color-hv);
 }
 
 .consultar-button {
-  background-color: #28a745;
+  background-color: var(--info-color);
   color: white;
   padding: 10px 20px;
   font-size: 14px;
@@ -87,9 +89,9 @@
 }
 
 .consultar-button:hover {
-  background-color: #218838;
+  background-color: var(--info-color-hv);
 }
 
 .consultar-button:active {
-  background-color: #1e7e34;
+  background-color: var(--info-color);
 }

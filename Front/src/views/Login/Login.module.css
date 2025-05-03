@@ -56,7 +56,7 @@
 .inpCont input {
     width: 100%;
     height: 100%;
-    background-color: #333;
+    background-color: var(--inp-background-color);
     /* Fondo de inputs más oscuro */
     outline: none;
     border: 2px solid rgba(255, 255, 255, 0.1);
