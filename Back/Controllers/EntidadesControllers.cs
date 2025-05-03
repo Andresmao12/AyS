@@ -922,24 +922,41 @@ namespace ProyectoBackendCsharp.Controllers
         /// <response code="500">Error interno del servidor.</response>
         [AllowAnonymous]
         [HttpPost("usuario")]
-        public IActionResult CrearUsuario(
-            string nombreProyecto,
-            string nombreTabla,
-            [FromBody] Dictionary<string, object?> datosEntidad)
+        public IActionResult CrearUsuario(string nombreProyecto, string nombreTabla, [FromBody] Dictionary<string, object?> datosEntidad)
         {
+            // Verifica si el nombre de la tabla es nulo o vacío, o si los datos a insertar están vacíos.
             if (string.IsNullOrWhiteSpace(nombreTabla) || datosEntidad == null || !datosEntidad.Any())
                 return BadRequest("El nombre de la tabla y los datos de la entidad no pueden estar vacíos.");
+            // Retorna un error HTTP 400 si algún parámetro requerido está vacío.
 
-    
             try
             {
-                var passwordHasher = new PasswordHasher<string>();
-
-                //Convertir JSON a tipos C#
+                // Convierte los datos recibidos en un diccionario con las claves y valores adecuados.
                 var propiedades = datosEntidad.ToDictionary(
                     kvp => kvp.Key,
-                    kvp => kvp.Value is JsonElement je ? ConvertirJsonElement(je) : kvp.Value
+                    kvp => kvp.Value is JsonElement elementoJson
+                        ? ConvertirJsonElement(elementoJson) // Convierte valores JSON a tipos de datos de C#
+                        : kvp.Value
                 );
+
+                // Definir una lista de posibles nombres de claves que representan contraseñas.
+                var clavesContrasena = new[] { "password", "contrasena", "passw", "clave" };
+
+                // Verifica si alguno de los campos en los datos coincide con un posible campo de contraseña.
+                var claveContrasena = propiedades.Keys.FirstOrDefault(k =>
+                    clavesContrasena.Any(pk => k.IndexOf(pk, StringComparison.OrdinalIgnoreCase) >= 0)
+                );
+
+                // Si se encuentra un campo de contraseña, se procede a cifrarla antes de almacenarla en la BD.
+                if (claveContrasena != null)
+                {
+                    var contrasenaPlano = propiedades[claveContrasena]?.ToString();
+                    if (!string.IsNullOrEmpty(contrasenaPlano))
+                    {
+                        propiedades[claveContrasena] = BCrypt.Net.BCrypt.HashPassword(contrasenaPlano);
+                        // Se cifra la contraseña usando BCrypt.
+                    }
+                }
 
                 // Si es usuario, eliminar posibles campos de FK que no existan en la tabla usuario
                 if (nombreTabla.Equals("usuario", StringComparison.OrdinalIgnoreCase))
@@ -948,21 +965,7 @@ namespace ProyectoBackendCsharp.Controllers
                     propiedades.Remove("fkemail");
                 }
 
-                //Detectar campos de contraseña (opcional)
-                var clavesContrasena = new[] { "password", "contrasena", "passw", "clave" };
-                var claveContrasena = propiedades.Keys.FirstOrDefault(k =>
-                    clavesContrasena.Any(pk => k.IndexOf(pk, StringComparison.OrdinalIgnoreCase) >= 0)
-                );
-
-                 // Hasheamos contraseña
-                if (!string.IsNullOrEmpty(claveContrasena) && propiedades[claveContrasena] is string contrasenaPlana)
-                {
-                    var hash = passwordHasher.HashPassword(null, contrasenaPlana);
-                    propiedades[claveContrasena] = hash;
-                }
-
-
-                //Datos de conexión y armado de SQL dinámico
+                // Datos de conexión y armado de SQL dinámico
                 string proveedor = _configuration["DatabaseProvider"]
                     ?? throw new InvalidOperationException("Proveedor de base de datos no configurado.");
                 string columnas = string.Join(",", propiedades.Keys);
@@ -970,22 +973,22 @@ namespace ProyectoBackendCsharp.Controllers
                 string consultaSQL =
                     $"INSERT INTO {nombreTabla} ({columnas}) VALUES ({valores}); SELECT SCOPE_IDENTITY();";
 
-                // 5) Crear parámetros para el INSERT
+                // Crear parámetros para el INSERT
                 var parametros = propiedades.Select(p =>
                     CrearParametro($"{ObtenerPrefijoParametro(proveedor)}{p.Key}", p.Value)
                 ).ToArray();
 
-                // 6) Logging
+                // Logging
                 Console.WriteLine($"Ejecutando SQL: {consultaSQL}");
                 foreach (var p in parametros)
                     Console.WriteLine($"{p.ParameterName} = {p.Value}, DbType: {p.DbType}");
 
-                // 7) Ejecutar INSERT y obtener ID
+                // Ejecutar INSERT y obtener ID
                 controlConexion.AbrirBd();
                 var idGenerated = controlConexion.EjecutarFuncion(consultaSQL, parametros);
                 controlConexion.CerrarBd();
 
-                // 8) Si es tabla usuario, insertar rol invitado (5) usando fkemail
+                // Si es tabla usuario, insertar rol invitado (5) usando fkemail
                 if (nombreTabla.Equals("usuario", StringComparison.OrdinalIgnoreCase)
                     && propiedades.ContainsKey("email")
                     && idGenerated != null)
@@ -996,7 +999,7 @@ namespace ProyectoBackendCsharp.Controllers
                     {
                         // Usar email original o idGenerated convertido a string si es necesario
                         CrearParametro("@email", propiedades["email"] ?? idGenerated),
-                        CrearParametro("@idRol", 2)
+                        CrearParametro("@idRol", 5)
                     };
 
                     controlConexion.AbrirBd();
@@ -1004,7 +1007,7 @@ namespace ProyectoBackendCsharp.Controllers
                     controlConexion.CerrarBd();
                 }
 
-                // 9) Devolver respuesta al cliente
+                // Devolver respuesta al cliente
                 if (idGenerated != null)
                     return CreatedAtAction(
                         nameof(CrearUsuario),
@@ -1021,6 +1024,7 @@ namespace ProyectoBackendCsharp.Controllers
                 return StatusCode(500, $"Error interno del servidor: {ex.Message}");
             }
         }
+
         
         /// <summary>
         /// Maneja el login de usuarios en la aplicación.
@@ -1074,16 +1078,7 @@ namespace ProyectoBackendCsharp.Controllers
                         var resultadoUsuario = controlConexion.EjecutarFuncion(consultaUsuarioSQL, parametrosUsuario);
                         controlConexion.CerrarBd();
 
-                        if (resultadoUsuario == null)
-                            return Unauthorized("Usuario no encontrado.");
-
-                        // Instanciamos hasher y comparamos
-                        var passwordHasher = new PasswordHasher<string>();
-                        var hashGuardado = resultadoUsuario.ToString();
-                        var resultadoVerificacion = passwordHasher.VerifyHashedPassword(null, hashGuardado!, contrasenaPlano!);
- 
-
-                       if (resultadoVerificacion == PasswordVerificationResult.Success)
+                        if (resultadoUsuario != null && contrasenaPlano == resultadoUsuario.ToString())
                         {
                             // Consulta para obtener el rol del usuario
                             string consultaRolSQL = @"
