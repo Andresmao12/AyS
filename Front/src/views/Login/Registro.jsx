@@ -91,7 +91,7 @@ const Registro = () => {
             navigate("/login");
         } catch (error) {
             console.error("Error completo: ", error);
-            setError(error.message);
+            setError("El usuario ya existe");
         } finally {
             setLoading(false);
         }

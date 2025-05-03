@@ -34,12 +34,6 @@ const Router = () => {
             isAuthenticated ? <FormsTemplate /> : <Navigate to="/login" />
           }
         />
-        <Route
-          path="*"
-          element={
-            isAuthenticated ? <Navigate to="/" /> : <Navigate to="/login" />
-          }
-        />
       </Routes>
     </BrowserRouter>
   );
