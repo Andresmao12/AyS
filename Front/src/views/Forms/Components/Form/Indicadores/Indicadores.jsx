@@ -387,8 +387,8 @@ export const Indicadores = () => {
                             <div className='tabla-agregados-container'>
                                 {Object.entries(datosAgregados).map(([tipo, datos]) =>
                                     datos.length > 0 ? (
-                                        <div key={tipo}>
-                                            <h5>{tipo} agregados:</h5>
+                                        <div key={tipo} className='mostrarDatosAgregados'>
+                                            <h5 className=''>{tipo} agregados:</h5>
                                             <table border="1" style={{ marginBottom: "1rem" }}>
                                                 <thead>
                                                     <tr>
