@@ -14,18 +14,28 @@ const Login = () => {
     const handleLogin = async (e) => {
         e.preventDefault();
 
-        const response = await fetch(`${fetchRoute}/api/proyecto/usuario/login`, {
+        const dataToSend = {
+            campoUsuario: "email",
+            campoContrasena: "contrasena",
+            valorUsuario: email,
+            valorContrasena: contrasena,
+        }
+
+        const response = await fetch(`${fetchRoute}/api/proyecto/usuario/verificar-contrasena`, {
             method: "POST",
             headers: {
                 "Content-Type": "application/json"
             },
-            body: JSON.stringify({ email, contrasena })
+            body: JSON.stringify(dataToSend)
         });
 
         if (response.ok) {
             const data = await response.json();
+
+            const toLlocalStorage = {email : data.email, rol :  data.rol}
+
             // Guarda los datos del usuario y los roles en localStorage
-            localStorage.setItem("usuario", JSON.stringify(data));
+            localStorage.setItem("usuario", JSON.stringify(toLlocalStorage));
             localStorage.setItem("rol", data.rol);
             navigate("/formularios");
         } else {

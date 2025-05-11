@@ -74,18 +74,31 @@ const Registro = () => {
         setLoading(true);
         setError("");
         try {
-            const response = await fetch(`${fetchRoute}/api/api/usuario/usuario`, {
+            const response = await fetch(`${fetchRoute}/api/proyecto/usuario`, {
                 method: "POST",
                 body: JSON.stringify(dataToSend),
                 headers: { "Content-Type": "application/json" }
             });
 
             const resData = await response.json();
-            console.log("Respuesta del servidor:", resData);
+            console.log("Respuesta del servidor al crear el usuario:", resData);
 
-            if (!response.ok) {
-                throw new Error(resData.mensaje || `Error (${response.status}): No se pudo registrar el usuario`);
-            }
+            if (!response.ok) throw new Error(resData.mensaje || `Error (${response.status}): No se pudo registrar el usuario`);
+
+            // CREAMOS EL ROL
+            const rol = { fkemail: dataToSend.email, fkidrol: 5 }
+
+            const resRol = await fetch(`${fetchRoute}/api/proyecto/rol_usuario`, {
+                method: "POST",
+                body: JSON.stringify(rol),
+                headers: { "Content-Type": "application/json" }
+            });
+
+            const dataRol = await resRol.json();
+            console.log("Respuesta del servidor al crear el rol:", dataRol);
+
+            if (!response.ok) throw new Error(resData.mensaje || `Error (${response.status}): El usuario no se pudo vincular a un rol`);
+
 
             alert("Usuario registrado con éxito. Ahora puedes iniciar sesión.");
             navigate("/login");

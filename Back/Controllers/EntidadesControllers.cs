@@ -12,7 +12,8 @@ using System.Linq; // Importa el espacio de nombres para operaciones de consulta
 using System.Text.Json; // Importa el espacio de nombres para manejar JSON.
 //using csharpapi.Models; // Importa los modelos del proyecto.
 using csharpapi.Services; // Importa los servicios del proyecto.
-using BCrypt.Net; // Importa el espacio de nombres para trabajar con BCrypt para hashing de contraseñas.
+using BCrypt.Net;
+using System.Threading.Tasks; // Importa el espacio de nombres para trabajar con BCrypt para hashing de contraseñas.
 
 namespace ProyectoBackendCsharp.Controllers
 {
@@ -460,7 +461,7 @@ namespace ProyectoBackendCsharp.Controllers
         /// <response code="500">Error interno del servidor.</response>
         [AllowAnonymous] // Permite que cualquier usuario acceda a este método sin necesidad de autenticación.
         [HttpPost] // Indica que este método maneja solicitudes HTTP POST.
-        public IActionResult Crear(string nombreProyecto, string nombreTabla, [FromBody] Dictionary<string, object?> datosEntidad)
+        public async Task<IActionResult> Crear(string nombreProyecto, string nombreTabla, [FromBody] Dictionary<string, object?> datosEntidad)
         {
             // Verifica si el nombre de la tabla es nulo o vacío, o si los datos a insertar están vacíos.
             if (string.IsNullOrWhiteSpace(nombreTabla) || datosEntidad == null || !datosEntidad.Any())
@@ -816,7 +817,25 @@ namespace ProyectoBackendCsharp.Controllers
                 // Si la contraseña es correcta, retorna un mensaje de éxito.
                 if (esContrasenaValida)
                 {
-                    return Ok("Contraseña verificada exitosamente.");
+                    // Consulta para obtener el rol del usuario
+                    string consultaRolSQL = @"
+                                SELECT r.nombre
+                                FROM rol_usuario ru
+                                JOIN rol r ON ru.fkidrol = r.id
+                                WHERE ru.fkemail = @email";
+                    var parametrosRol = new[] { CrearParametro("@email", valorUsuario) };
+
+                    controlConexion.AbrirBd();
+                    var resultadoRol = controlConexion.EjecutarFuncion(consultaRolSQL, parametrosRol);
+                    controlConexion.CerrarBd();
+
+                    Console.WriteLine($"Rol del usuarioW: {resultadoRol}");
+                    return Ok(new
+                    {
+                        mensaje = "Contraseña verificada exitosamente.",
+                        email = valorUsuario,
+                        rol = resultadoRol
+                    });
                 }
                 else
                 {
@@ -1010,7 +1029,7 @@ namespace ProyectoBackendCsharp.Controllers
                 return StatusCode(500, $"Error interno del servidor: {ex.Message}");
             }
         }
-        
+
         /// <summary>
         /// Maneja el login de usuarios en la aplicación.
         /// </summary>
