@@ -1,3 +1,4 @@
+
 #nullable enable // Habilita las características de referencia nula en C#, permitiendo anotaciones y advertencias relacionadas con posibles valores nulos.
 using System; // Importa el espacio de nombres que contiene tipos fundamentales como Exception, Console, etc.
 using System.Collections.Generic; // Importa el espacio de nombres para colecciones genéricas como Dictionary.
@@ -12,7 +13,6 @@ using System.Text.Json; // Importa el espacio de nombres para manejar JSON.
 //using csharpapi.Models; // Importa los modelos del proyecto.
 using csharpapi.Services; // Importa los servicios del proyecto.
 using BCrypt.Net; // Importa el espacio de nombres para trabajar con BCrypt para hashing de contraseñas.
-using Microsoft.AspNetCore.Identity;
 
 namespace ProyectoBackendCsharp.Controllers
 {
@@ -930,11 +930,8 @@ namespace ProyectoBackendCsharp.Controllers
             if (string.IsNullOrWhiteSpace(nombreTabla) || datosEntidad == null || !datosEntidad.Any())
                 return BadRequest("El nombre de la tabla y los datos de la entidad no pueden estar vacíos.");
 
-    
             try
             {
-                var passwordHasher = new PasswordHasher<string>();
-
                 //Convertir JSON a tipos C#
                 var propiedades = datosEntidad.ToDictionary(
                     kvp => kvp.Key,
@@ -953,14 +950,6 @@ namespace ProyectoBackendCsharp.Controllers
                 var claveContrasena = propiedades.Keys.FirstOrDefault(k =>
                     clavesContrasena.Any(pk => k.IndexOf(pk, StringComparison.OrdinalIgnoreCase) >= 0)
                 );
-
-                 // Hasheamos contraseña
-                if (!string.IsNullOrEmpty(claveContrasena) && propiedades[claveContrasena] is string contrasenaPlana)
-                {
-                    var hash = passwordHasher.HashPassword(null, contrasenaPlana);
-                    propiedades[claveContrasena] = hash;
-                }
-
 
                 //Datos de conexión y armado de SQL dinámico
                 string proveedor = _configuration["DatabaseProvider"]
@@ -1074,16 +1063,7 @@ namespace ProyectoBackendCsharp.Controllers
                         var resultadoUsuario = controlConexion.EjecutarFuncion(consultaUsuarioSQL, parametrosUsuario);
                         controlConexion.CerrarBd();
 
-                        if (resultadoUsuario == null)
-                            return Unauthorized("Usuario no encontrado.");
-
-                        // Instanciamos hasher y comparamos
-                        var passwordHasher = new PasswordHasher<string>();
-                        var hashGuardado = resultadoUsuario.ToString();
-                        var resultadoVerificacion = passwordHasher.VerifyHashedPassword(null, hashGuardado!, contrasenaPlano!);
- 
-
-                       if (resultadoVerificacion == PasswordVerificationResult.Success)
+                        if (resultadoUsuario != null && contrasenaPlano == resultadoUsuario.ToString())
                         {
                             // Consulta para obtener el rol del usuario
                             string consultaRolSQL = @"
@@ -1211,4 +1191,3 @@ Códigos de estado HTTP:
 - 510 No extendido: Se requiere la extensión adicional de las políticas de acceso.
 - 511 Se requiere autenticación de red: El cliente debe autenticar la red para poder acceder al recurso.
 */
-
