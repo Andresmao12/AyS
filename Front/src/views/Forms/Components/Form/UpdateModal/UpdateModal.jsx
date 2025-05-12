@@ -6,16 +6,29 @@ const UpdateModal = ({ schema, onUpdate, onClose, actualValues }) => {
     const [formData, setFormData] = useState(actualValues);
     const [fkOptions, setFkOptions] = useState({});
     const [loading, setLoading] = useState(true);
+<<<<<<< Updated upstream
+=======
+
+>>>>>>> Stashed changes
 
     // Cargar opciones para campos FK
     useEffect(() => {
         const loadFkOptions = async () => {
             const options = {};
-            
+
             for (const field of schema.fields) {
                 if (field.type === 'fk' && field.fkTable) {
                     try {
-                        const response = await fetch(`${fetchRoute}/api/proyecto/${field.fkTable}`);
+
+                        const token = localStorage.getItem('token')
+
+                        const response = await fetch(`${fetchRoute}/api/proyecto/${field.fkTable}`, {
+                            method: "GET",
+                            headers: {
+                                "Authorization": `Bearer ${JSON.parse(token)}`,
+                                "Content-Type": "application/json",
+                            }
+                        });
                         const data = await response.json();
                         options[field.name] = data;
                     } catch (error) {
@@ -24,7 +37,7 @@ const UpdateModal = ({ schema, onUpdate, onClose, actualValues }) => {
                     }
                 }
             }
-            
+
             setFkOptions(options);
             setLoading(false);
         };
@@ -131,6 +144,10 @@ const UpdateModal = ({ schema, onUpdate, onClose, actualValues }) => {
                                 </div>
                             )
                         ))}
+<<<<<<< Updated upstream
+=======
+
+>>>>>>> Stashed changes
                         <div className="form-actions">
                             <button type="submit" className="submit-button">Guardar</button>
                             <button type="button" className="cancel-button" onClick={onClose}>Cancelar</button>
