@@ -5,8 +5,6 @@ import { FaUser, FaLock } from "react-icons/fa";
 const Login = () => {
 
     const navigate = useNavigate();
-<<<<<<< Updated upstream
-=======
     const [email, setEmail] = useState('');
     const [contrasena, setContrasena] = useState('');
 
@@ -46,7 +44,6 @@ const Login = () => {
         }
     };
 
->>>>>>> Stashed changes
 
     return (
         <div className={styles.login}>

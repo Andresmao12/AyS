@@ -830,9 +830,6 @@ namespace ProyectoBackendCsharp.Controllers
                 // Si la contraseña es correcta, retorna un mensaje de éxito.
                 if (esContrasenaValida)
                 {
-<<<<<<< Updated upstream
-                    return Ok("Contraseña verificada exitosamente.");
-=======
                     // Consulta para obtener el rol del usuario
                     string consultaRolSQL = @"
                                 SELECT r.nombre
@@ -856,7 +853,6 @@ namespace ProyectoBackendCsharp.Controllers
                         token = tokenJwt,
                         rol = resultadoRol
                     });
->>>>>>> Stashed changes
                 }
                 else
                 {
@@ -949,8 +945,6 @@ namespace ProyectoBackendCsharp.Controllers
             }
         }
 
-<<<<<<< Updated upstream
-=======
         /// <summary>
         /// Crea un nuevo registro en la tabla especificada con los datos proporcionados
         /// y asigna automáticamente el rol "invitado" (5) si la tabla es "usuario".
@@ -1145,7 +1139,6 @@ namespace ProyectoBackendCsharp.Controllers
             }
         }
 
->>>>>>> Stashed changes
     }
 }
 
