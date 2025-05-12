@@ -42,11 +42,16 @@ export const Indicadores = () => {
 
             console.log("SE APRETO CREAR IND")
 
+            const token = localStorage.getItem('token')
+
             // Creamos el indicador
             const resp = await fetch(`${fetchRoute}/api/proyecto/indicador`, {
                 method: "POST",
                 body: JSON.stringify({ ...formData }),
-                headers: { "Content-Type": "application/json" }
+                headers: {
+                    "Content-Type": "application/json",
+                    "Authorization": `Bearer ${JSON.parse(token)}`,
+                }
             });
 
             // Tomamos el id de indicador
@@ -79,11 +84,16 @@ export const Indicadores = () => {
                         'fkidindicador': Object.values(idIndicador)[0],
                         [nombreColumna]: Object.values(id)[0]
                     };
+                    const token = localStorage.getItem('token')
+
 
                     const resp = await fetch(`${fetchRoute}/api/proyecto/${nombreTablaRelacion}`, {
                         method: "POST",
                         body: JSON.stringify(relacion),
-                        headers: { "Content-Type": "application/json" }
+                        headers: {
+                            "Content-Type": "application/json",
+                            "Authorization": `Bearer ${JSON.parse(token)}`,
+                        }
                     });
 
                 }
@@ -124,7 +134,16 @@ export const Indicadores = () => {
         for (const field of Schemas[0].fields) {
             if (field.type === 'fk' && field.fkTable) {
                 try {
-                    const response = await fetch(`${fetchRoute}/api/proyecto/${field.fkTable}`);
+
+                    const token = localStorage.getItem('token')
+
+                    const response = await fetch(`${fetchRoute}/api/proyecto/${field.fkTable}`, {
+                        method: "GET",
+                        headers: {
+                            "Authorization": `Bearer ${JSON.parse(token)}`,
+                            "Content-Type": "application/json",
+                        }
+                    });
                     const data = await response.json();
                     options[field.name] = data;
                 } catch (error) {
@@ -136,7 +155,16 @@ export const Indicadores = () => {
 
         for (const field of optionsAdd) {
             try {
-                const response = await fetch(`${fetchRoute}/api/proyecto/${field.table}`);
+
+                const token = localStorage.getItem('token')
+
+                const response = await fetch(`${fetchRoute}/api/proyecto/${field.table}`, {
+                    method: "GET",
+                    headers: {
+                        "Authorization": `Bearer ${JSON.parse(token)}`,
+                        "Content-Type": "application/json",
+                    }
+                });
                 const data = await response.json();
                 options[field.name] = data;
             } catch (error) {
@@ -148,6 +176,35 @@ export const Indicadores = () => {
         setFkOptions(options);
     };
 
+<<<<<<< Updated upstream
+=======
+    const handleConsultar = async (id = null) => {
+        try {
+            let endpoint = Schemas[0].endpoints.getAll
+                .replace('{nombreProyecto}', 'proyecto')
+                .replace('{nombreTabla}', Schemas[0].table);
+
+            const token = localStorage.getItem('token')
+
+            const response = await fetch(`${fetchRoute}${endpoint}`, {
+                method: "GET",
+                headers: {
+                    "Authorization": `Bearer ${JSON.parse(token)}`,
+                    "Content-Type": "application/json",
+                }
+            });
+            const data = await response.json();
+            setTableData(data);
+
+        } catch (error) {
+            console.log(error)
+            console.error('Error al consultar:', error);
+            //if (id) handleConsultar() // ----> Validar si fue un 404?
+
+        }
+    }
+
+>>>>>>> Stashed changes
     /* MODAL */
 
     const fieldsSchema = Schemas[0].fields
@@ -379,7 +436,56 @@ export const Indicadores = () => {
                         </div>
                     </div>
                 )
+<<<<<<< Updated upstream
             }
+=======
+            )}
+
+            <table className="data-table">
+                <thead>
+                    <tr>
+                        {columns.map((column) => (
+                            <th key={column}>{column}</th>
+                        ))}
+                        {rol.includes('admin') && <th>Eliminar</th>}
+                        {(rol.includes('admin') || rol.includes('Validador')) && <th>Actualizar</th>}
+                    </tr>
+                </thead>
+                <tbody>
+                    {tableData.map((row, index) => (
+                        <tr key={index}>
+                            {columns.map((column, index2) => (
+                                <td key={index2}>{row[column]}</td>
+                            ))}
+                            {rol === 'admin' && (
+                                <td>
+                                    <span>
+                                        <MdOutlineDelete
+                                            size={27}
+                                            color='red'
+                                            cursor={'pointer'}
+                                            onClick={() => { deleteRow(row) }}
+                                        />
+                                    </span>
+                                </td>
+                            )}
+                            {(rol.includes('admin') || rol.includes('Validador')) && (
+                                <td>
+                                    <span>
+                                        <RxUpdate
+                                            size={27}
+                                            color='blue'
+                                            cursor={'pointer'}
+                                            onClick={() => { updateRow(row) }}
+                                        />
+                                    </span>
+                                </td>
+                            )}
+                        </tr>
+                    ))}
+                </tbody>
+            </table>
+>>>>>>> Stashed changes
 
         </div>
     )
