@@ -54,14 +54,17 @@ export const Indicadores = () => {
 
     const handleCrearIndicador = async () => {
         try {
-
+            const token = localStorage.getItem('token')
             console.log("SE APRETO CREAR IND")
 
             // Creamos el indicador
             const resp = await fetch(`${fetchRoute}/api/proyecto/indicador`, {
                 method: "POST",
                 body: JSON.stringify({ ...formData }),
-                headers: { "Content-Type": "application/json" }
+                headers: {
+                    "Content-Type": "application/json",
+                    "Authorization": `Bearer ${JSON.parse(token)}`,
+                }
             });
 
             // Tomamos el id de indicador
@@ -95,10 +98,15 @@ export const Indicadores = () => {
                         [nombreColumna]: Object.values(id)[0]
                     };
 
+                    const token = localStorage.getItem('token')
+
                     const resp = await fetch(`${fetchRoute}/api/proyecto/${nombreTablaRelacion}`, {
                         method: "POST",
                         body: JSON.stringify(relacion),
-                        headers: { "Content-Type": "application/json" }
+                        headers: {
+                            "Content-Type": "application/json",
+                            "Authorization": `Bearer ${JSON.parse(token)}`,
+                        }
                     });
 
                 }
@@ -139,7 +147,15 @@ export const Indicadores = () => {
         for (const field of Schemas[0].fields) {
             if (field.type === 'fk' && field.fkTable) {
                 try {
-                    const response = await fetch(`${fetchRoute}/api/proyecto/${field.fkTable}`);
+                    const token = localStorage.getItem('token')
+
+                    const response = await fetch(`${fetchRoute}/api/proyecto/${field.fkTable}`, {
+                        method: "GET",
+                        headers: {
+                            "Authorization": `Bearer ${JSON.parse(token)}`,
+                            "Content-Type": "application/json",
+                        }
+                    });
                     const data = await response.json();
                     options[field.name] = data;
                 } catch (error) {
@@ -151,7 +167,16 @@ export const Indicadores = () => {
 
         for (const field of optionsAdd) {
             try {
-                const response = await fetch(`${fetchRoute}/api/proyecto/${field.table}`);
+
+                const token = localStorage.getItem('token')
+
+                const response = await fetch(`${fetchRoute}/api/proyecto/${field.table}`, {
+                    method: "GET",
+                    headers: {
+                        "Authorization": `Bearer ${JSON.parse(token)}`,
+                        "Content-Type": "application/json",
+                    }
+                });
                 const data = await response.json();
                 options[field.name] = data;
             } catch (error) {
@@ -169,8 +194,15 @@ export const Indicadores = () => {
                 .replace('{nombreProyecto}', 'proyecto')
                 .replace('{nombreTabla}', Schemas[0].table);
 
+            const token = localStorage.getItem('token')
 
-            const response = await fetch(`${fetchRoute}${endpoint}`);
+            const response = await fetch(`${fetchRoute}${endpoint}`, {
+                method: "GET",
+                headers: {
+                    "Authorization": `Bearer ${JSON.parse(token)}`,
+                    "Content-Type": "application/json",
+                }
+            });
             const data = await response.json();
             setTableData(data);
 
@@ -450,7 +482,7 @@ export const Indicadores = () => {
                                     </span>
                                 </td>
                             )}
-                            {(rol.includes('admin') || rol.includes('Validador'))  && (
+                            {(rol.includes('admin') || rol.includes('Validador')) && (
                                 <td>
                                     <span>
                                         <RxUpdate

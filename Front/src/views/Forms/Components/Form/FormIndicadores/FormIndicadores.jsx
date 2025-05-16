@@ -46,11 +46,19 @@ const FormIndicadores = ({ onUpdate, onClose, onSubmit, action, initialData }) =
     useEffect(() => {
         const fetchData = async (tableName) => {
             try {
+                const token = localStorage.getItem('token')
+
                 const endpoint = endpoints["getAll"]
                     .replace('{nombreProyecto}', 'proyecto')
                     .replace('{nombreTabla}', tableName);
 
-                const res = await fetch(`${fetchRoute}${endpoint}`);
+                const res = await fetch(`${fetchRoute}${endpoint}`, {
+                    method: "GET",
+                    headers: {
+                        "Authorization": `Bearer ${JSON.parse(token)}`,
+                        "Content-Type": "application/json",
+                    }
+                });
                 const data = await res.json();
 
                 return { [tableName]: data }; // Retorna un objeto con la clave siendo el nombre de la tabla
@@ -100,6 +108,8 @@ const FormIndicadores = ({ onUpdate, onClose, onSubmit, action, initialData }) =
         if (action == "create") {
             const createIndicador = async () => {
                 try {
+                    const token = localStorage.getItem('token')
+
                     const endpoint = endpoints.create
                         .replace('{nombreProyecto}', 'proyecto')
                         .replace('{nombreTabla}', 'indicador');
@@ -108,6 +118,7 @@ const FormIndicadores = ({ onUpdate, onClose, onSubmit, action, initialData }) =
                         method: 'POST',
                         headers: {
                             'Content-Type': 'application/json',
+                            "Authorization": `Bearer ${JSON.parse(token)}`,
                         },
                         body: JSON.stringify(formData),
                     });

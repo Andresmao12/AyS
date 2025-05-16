@@ -32,11 +32,14 @@ const Login = () => {
         if (response.ok) {
             const data = await response.json();
 
-            const toLlocalStorage = {email : data.email, rol :  data.rol}
+            console.log('DATALOGINTK', data)
+
+            const toLlocalStorage = { email: data.email, rol: data.rol }
 
             // Guarda los datos del usuario y los roles en localStorage
             localStorage.setItem("usuario", JSON.stringify(toLlocalStorage));
             localStorage.setItem("rol", data.rol);
+            localStorage.setItem("token", JSON.stringify(data.token))
             navigate("/formularios");
         } else {
             alert("Usuario o contraseña incorrecta");

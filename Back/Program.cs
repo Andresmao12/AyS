@@ -5,6 +5,9 @@ using Microsoft.Extensions.DependencyInjection; // Importa el espacio de nombres
 using Microsoft.Extensions.Hosting; // Importa el espacio de nombres necesario para trabajar con diferentes entornos (desarrollo, producción, etc.).
 using csharpapi.Services; // Importa los servicios personalizados que se utilizarán en la aplicación.
 using Microsoft.OpenApi.Models; // 🔹 Importa el espacio de nombres necesario para habilitar Swagger.
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.IdentityModel.Tokens;
+using System.Text;
 
 var builder = WebApplication.CreateBuilder(args); // Crea un constructor para configurar la aplicación web ASP.NET Core.
 
@@ -46,6 +49,29 @@ builder.Services.AddSwaggerGen(c =>
     });
 });
 
+var jwtKey = builder.Configuration["Jwt:Key"];
+var jwtIssuer = builder.Configuration["Jwt:Issuer"];
+var jwtAudience = builder.Configuration["Jwt:Audience"];
+
+builder.Services.AddAuthentication(options =>
+{
+    options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+    options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+})
+.AddJwtBearer(options =>
+{
+    options.TokenValidationParameters = new TokenValidationParameters
+    {
+        ValidateIssuer = true,
+        ValidateAudience = true,
+        ValidateLifetime = true,
+        ValidateIssuerSigningKey = true,
+        ValidIssuer = jwtIssuer,
+        ValidAudience = jwtAudience,
+        IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtKey))
+    };
+});
+
 var app = builder.Build(); // Construye la aplicación con las configuraciones especificadas anteriormente.
 
 if (app.Environment.IsDevelopment()) // Verifica si la aplicación está en el entorno de desarrollo.
@@ -66,6 +92,10 @@ if (app.Environment.IsDevelopment()) // Verifica si la aplicación está en el e
 
 app.UseCors("AllowAllOrigins"); // Aplica la política de CORS que permite solicitudes desde cualquier origen.
 app.UseSession(); // Habilita el soporte de sesiones en el middleware de la aplicación.
+
+app.UseAuthentication(); 
+app.UseAuthorization(); 
+
 app.UseAuthorization(); // Habilita el middleware de autorización, necesario para proteger rutas que requieren autenticación o autorización.
 
 app.MapControllers(); // Configura las rutas de los controladores para manejar las solicitudes HTTP.

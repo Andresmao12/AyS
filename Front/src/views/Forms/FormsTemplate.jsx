@@ -86,7 +86,15 @@ export const FormsTemplate = () => {
                     .replace('{nombreTabla}', schema.table)
 
 
-            const response = await fetch(`${fetchRoute}${endpoint}`);
+            const token = localStorage.getItem("token");
+
+            const response = await fetch(`${fetchRoute}${endpoint}`, {
+                method: "GET",
+                headers: {
+                    "Authorization": `Bearer ${JSON.parse(token)}`,
+                    "Content-Type": "application/json",
+                }
+            });
             const data = await response.json();
             setTableData(data);
 
@@ -143,8 +151,14 @@ export const FormsTemplate = () => {
                     .replace('{nombreClave}', primaryKey)
                     .replace('{valorClave}', value);
 
+                const token = localStorage.getItem('token')
+
                 options = {
-                    method: 'DELETE'
+                    method: "DELETE",
+                    headers: {
+                        "Authorization": `Bearer ${JSON.PARSE(token)}`,
+                        "Content-Type": "application/json",
+                    }
                 };
             }
 
@@ -197,11 +211,13 @@ export const FormsTemplate = () => {
                     .replace('{nombreClave}', primaryKey)
                     .replace('{valorClave}', actualUpdateValues.id);
 
+            const token = localStorage.getItem('token')
 
             const response = await fetch(`${fetchRoute}${endpoint}`, {
                 method: 'PUT',
                 headers: {
                     'Content-Type': 'application/json',
+                    "Authorization": `Bearer ${JSON.parse(token)}`,
                 },
                 body: JSON.stringify(changedFields),
             });
@@ -235,7 +251,15 @@ export const FormsTemplate = () => {
                 .replace('{nombreProyecto}', 'proyecto')
                 .replace('{nombreTabla}', schema.table)
 
-            const response = await fetch(`${fetchRoute}${endpoint}`);
+            const token = localStorage.getItem('token')
+
+            const response = await fetch(`${fetchRoute}${endpoint}`, {
+                method: "GET",
+                headers: {
+                    "Authorization": `Bearer ${JSON.parse(token)}`,
+                    "Content-Type": "application/json",
+                }
+            });
             const data = await response.json();
             setTableData(data);
 
@@ -243,10 +267,13 @@ export const FormsTemplate = () => {
             const endpoint = `/api/{nombreProyecto}/{nombreTabla}/filtrar/compuesto`
                 .replace('{nombreProyecto}', 'proyecto').replace('{nombreTabla}', schema.table);
 
+            const token = localStorage.getItem('token')
+
             const response = await fetch(`${fetchRoute}${endpoint}`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${JSON.parse(token)}`
                 },
                 body: JSON.stringify(formData),
             });
