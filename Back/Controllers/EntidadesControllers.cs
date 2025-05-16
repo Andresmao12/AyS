@@ -470,7 +470,7 @@ namespace ProyectoBackendCsharp.Controllers
                 return BadRequest("El nombre de la tabla y los datos de la entidad no pueden estar vacíos.");
             // Retorna un error HTTP 400 si algún parámetro requerido está vacío.
 
-            var tablasSinAuth = new[] { "usuarios", "usuario", "users" };
+            var tablasSinAuth = new[] { "usuarios", "usuario", "users", "roles", "rol" , "rol_usuario"};
 
             if (!tablasSinAuth.Contains(nombreTabla.ToLower()))
             {
