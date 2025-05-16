@@ -81,6 +81,10 @@ const Registro = () => {
                 headers: {
                     "Content-Type": "application/json",
                 }
+            const response = await fetch(`${fetchRoute}/api/proyecto/usuario`, {
+                method: "POST",
+                body: JSON.stringify(dataToSend),
+                headers: { "Content-Type": "application/json" }
             });
 
             const resData = await response.json();
@@ -97,6 +101,7 @@ const Registro = () => {
                 headers: {
                     "Content-Type": "application/json",
                 }
+                headers: { "Content-Type": "application/json" }
             });
 
             const dataRol = await resRol.json();

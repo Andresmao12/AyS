@@ -25,7 +25,9 @@ const DynamicForm = ({ schema, onSubmit, onCancel, initialData = {} }) => {
                             }
                         });
                         const data = await response.json();
+
                         options[field.name] = data;
+
                     } catch (error) {
                         console.error(`Error cargando opciones para ${field.name}:`, error);
                         options[field.name] = [];
@@ -117,15 +119,17 @@ const DynamicForm = ({ schema, onSubmit, onCancel, initialData = {} }) => {
                         required={field.required}
                     >
                         <option value="">Seleccione una opción</option>
-<<<<<<< Updated upstream
+
                         {fkOptions[field.name]?.map((option) => (
                             <option key={option.id} value={option.id}>
                                 {option.nombre || option.descripcion}
-=======
+
                         {fkOptions[field.name]?.map((option, index) => (
                             <option key={index} value={option.id || option.nombre || option.descripcion || option.email}>
                                 {option.nombre || option.descripcion || option.email}
->>>>>>> Stashed changes
+                        {fkOptions[field.name]?.map((option,index) => (
+                            <option key={index} value={option.id || option.nombre || option.descripcion || option.email}>
+                                {option.nombre || option.descripcion || option.email}
                             </option>
                         ))}
                     </select>

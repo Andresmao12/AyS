@@ -3,7 +3,6 @@
 
 #root {
     all: unset;
-
 }
 
 * {
@@ -17,10 +16,11 @@
 body {
     min-height: 100vh;
     position: relative;
+    overflow-x: hidden;
 
-    background-color: #222;
+    background-color: var(--background-component);
     /* Temporal?? */
-    color: var(--aux-text-color);
+    color: var(--text-color);
 }
 
 button,

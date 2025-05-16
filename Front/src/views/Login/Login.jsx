@@ -1,9 +1,11 @@
-import styles from './Login.module.css'
-import { useNavigate } from "react-router-dom"
+import { useState } from "react";
+import { fetchRoute } from '../../utils/helpers/fecthRoutes.js';
+import { useNavigate } from "react-router-dom";
+import styles from './Login.module.css';
 import { FaUser, FaLock } from "react-icons/fa";
+import { MdArrowBack } from "react-icons/md";
 
 const Login = () => {
-
     const navigate = useNavigate();
     const [email, setEmail] = useState('');
     const [contrasena, setContrasena] = useState('');
@@ -34,9 +36,13 @@ const Login = () => {
 
             const toLlocalStorage = { email: data.email, rol: data.rol }
 
+            const toLlocalStorage = {email : data.email, rol :  data.rol}
+
+
             // Guarda los datos del usuario y los roles en localStorage
             localStorage.setItem("usuario", JSON.stringify(toLlocalStorage));
             localStorage.setItem("rol", data.rol);
+
             localStorage.setItem("token", JSON.stringify(data.token))
             navigate("/formularios");
         } else {
@@ -47,31 +53,41 @@ const Login = () => {
 
     return (
         <div className={styles.login}>
-            <form action="">
+            <MdArrowBack className={styles.backIcon} onClick={() => navigate("/")} />
+            <form onSubmit={handleLogin}>
                 <h1>Bienvenido</h1>
-                <div className={styles.cajatexto}>
-                    <input type="text" placeholder="Nombre de usuario" required/>
+                <div className={styles.inpCont}>
+                    <input
+                        id="inp-email"
+                        placeholder=" "
+                        required
+                        value={email}
+                        onChange={(e) => setEmail(e.target.value)}
+                    />
+                    <label htmlFor="inp-email">Correo</label>
                     <FaUser className={styles.icon} />
                 </div>
-                <div className={styles.cajatexto}>
-                    <input type="password" placeholder="Contraseña" required></input>
+
+                <div className={styles.inpCont}>
+                    <input
+                        id="inp-password"
+                        type="password"
+                        placeholder=" "
+                        required
+                        value={contrasena}
+                        onChange={(e) => setContrasena(e.target.value)}
+                    />
+                    <label htmlFor="inp-password">Contraseña</label>
                     <FaLock className={styles.icon} />
                 </div>
-                <div className={styles.recordar}>
-                    <label>
-                        <input type="checkbox"/>
-                        <a href="#"> Recordar contraseña</a>
-                    </label>
-                </div>
-                <button type="submit" onClick={() => navigate("/formularios")}>Ingresar</button>
+                <button type="submit">Ingresar</button>
 
-                <div className={styles.registrarCuenta}>
-                    <p>No tiene una cuenta? <a href="#">Registrarse</a></p>
-                </div>
+                <span className={styles.RegresarLogin} onClick={() => navigate("/registro")}>
+                    ¿No tienes una cuenta? <a>Registrarse</a>
+                </span>
             </form>
         </div>
-    )
-
-}
+    );
+};
 
 export default Login;

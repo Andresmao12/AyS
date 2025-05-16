@@ -1,14 +1,14 @@
 import React from 'react'
-import styles from './Banner1.module.css'
+import styles from './BannerPpal.module.css'
 import { useNavigate } from 'react-router-dom'
 import { FaArrowRight } from "react-icons/fa";
 
-function Banner1() {
+function BannerPpal() {
 
     const navigate = useNavigate();
 
     return (
-        <section className={styles.container}>
+        <section className={styles.container} id='main'>
             <div className={styles.container_textCont}>
                 <h1>Proyecto Aplicaciones y Servicios Web</h1>
                 <button className={styles.btnLogin} onClick={() => navigate("/login")} ><span>Start <FaArrowRight className={styles.btnLogin_arrow}/>
@@ -20,4 +20,4 @@ function Banner1() {
     )
 }
 
-export default Banner1
+export default BannerPpal

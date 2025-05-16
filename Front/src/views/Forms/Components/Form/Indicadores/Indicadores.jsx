@@ -2,6 +2,8 @@ import React, { useEffect, useState } from 'react'
 import './Indicadores.css'
 import Schemas from '../../../FormsTables.json'
 import { fetchRoute } from '../../../../../utils/helpers/fecthRoutes';
+import { MdOutlineDelete } from 'react-icons/md';
+import { RxUpdate } from 'react-icons/rx';
 
 const tipos = {
     Responsables: [
@@ -28,9 +30,22 @@ export const Indicadores = () => {
     const [showModalCreate, setshowModalCreate] = useState(false)
     const [formData, setFormData] = useState({})
     const [fkOptions, setFkOptions] = useState([])
+    const [rol, setRol] = useState('');
+
+    const [columns, setcolumns] = useState(Schemas[0].fields.map((field) => field.name))
+    const [tableData, setTableData] = useState([]); // Datos de toda la tabla
+
+
+    useEffect(() => {
+        const storedRol = localStorage.getItem('rol');
+        if (storedRol) {
+            setRol(storedRol);
+        }
+    }, []);
 
     useEffect(() => {
         loadFkOptions()
+        handleConsultar()
     }, [])
 
     const handleChangeShowFormCreate = () => {
@@ -176,8 +191,7 @@ export const Indicadores = () => {
         setFkOptions(options);
     };
 
-<<<<<<< Updated upstream
-=======
+
     const handleConsultar = async (id = null) => {
         try {
             let endpoint = Schemas[0].endpoints.getAll
@@ -193,6 +207,9 @@ export const Indicadores = () => {
                     "Content-Type": "application/json",
                 }
             });
+
+
+            const response = await fetch(`${fetchRoute}${endpoint}`);
             const data = await response.json();
             setTableData(data);
 
@@ -204,7 +221,7 @@ export const Indicadores = () => {
         }
     }
 
->>>>>>> Stashed changes
+
     /* MODAL */
 
     const fieldsSchema = Schemas[0].fields
@@ -326,12 +343,14 @@ export const Indicadores = () => {
         <div>
             {/* HEADER */}
             <header>
-                <button onClick={handleChangeShowFormCreate}>Crear Indicador</button>
+                {rol === 'admin' && (
+                    <button onClick={handleChangeShowFormCreate}>Crear Indicador</button>
+                )}
                 <button>Buscar</button>
             </header>
 
 
-            {
+            {rol === 'admin' && (
                 showModalCreate && (
                     <div className='container-modal'>
                         <div className='close-modal' onClick={handleChangeShowFormCreate}></div>
@@ -394,20 +413,22 @@ export const Indicadores = () => {
 
                                         </div>
                                     ))}
+
                                     <button type="button" onClick={handleAgregarDato}>
                                         Agregar
                                     </button>
 
 
                                 </div>
+
                             )}
 
                             {/* 🗃 Mostrar tablas de datos agregados */}
                             <div className='tabla-agregados-container'>
                                 {Object.entries(datosAgregados).map(([tipo, datos]) =>
                                     datos.length > 0 ? (
-                                        <div key={tipo}>
-                                            <h5>{tipo} agregados:</h5>
+                                        <div key={tipo} className='mostrarDatosAgregados'>
+                                            <h5 className=''>{tipo} agregados:</h5>
                                             <table border="1" style={{ marginBottom: "1rem" }}>
                                                 <thead>
                                                     <tr>
@@ -429,16 +450,17 @@ export const Indicadores = () => {
                                         </div>
                                     ) : null
                                 )}
+
                             </div>
+
                             <button type="button" onClick={handleCrearIndicador}>
                                 Crear Indicador
                             </button>
                         </div>
+
                     </div>
                 )
-<<<<<<< Updated upstream
             }
-=======
             )}
 
             <table className="data-table">
@@ -470,6 +492,7 @@ export const Indicadores = () => {
                                 </td>
                             )}
                             {(rol.includes('admin') || rol.includes('Validador')) && (
+                            {(rol.includes('admin') || rol.includes('Validador'))  && (
                                 <td>
                                     <span>
                                         <RxUpdate
@@ -485,7 +508,6 @@ export const Indicadores = () => {
                     ))}
                 </tbody>
             </table>
->>>>>>> Stashed changes
 
         </div>
     )
