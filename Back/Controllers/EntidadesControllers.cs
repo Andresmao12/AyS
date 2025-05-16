@@ -25,12 +25,14 @@ namespace ProyectoBackendCsharp.Controllers
     {
         private readonly ControlConexion controlConexion; // Servicio para manejar la conexión a la base de datos.
         private readonly IConfiguration _configuration; // Configuración de la aplicación para obtener valores de appsettings.json.
+        private readonly TokenService _tokenService;
 
         // Constructor que inyecta los servicios necesarios
-        public EntidadesController(ControlConexion controlConexion, IConfiguration configuration)
+        public EntidadesController(ControlConexion controlConexion, IConfiguration configuration, TokenService tokenService)
         {
             this.controlConexion = controlConexion ?? throw new ArgumentNullException(nameof(controlConexion));
             _configuration = configuration ?? throw new ArgumentNullException(nameof(configuration));
+            _tokenService = tokenService;
         }
 
         /// <summary>
@@ -44,7 +46,7 @@ namespace ProyectoBackendCsharp.Controllers
         /// <response code="404">La tabla no existe en la base de datos.</response>
         /// <response code="409">Error de restricción en la base de datos (clave foránea o clave duplicada).</response>
         /// <response code="500">Error interno del servidor.</response>
-        [AllowAnonymous] // Permite que cualquier usuario acceda a este endpoint, sin necesidad de autenticación.
+        [Authorize] // Permite que cualquier usuario acceda a este endpoint, sin necesidad de autenticación.
         [HttpGet] // Define que este método responde a solicitudes HTTP GET.
         public IActionResult Listar(string nombreProyecto, string nombreTabla) // Método para listar los registros de una tabla específica.
         {
@@ -111,7 +113,7 @@ namespace ProyectoBackendCsharp.Controllers
         /// <response code="400">Uno o más parámetros proporcionados son inválidos o están vacíos.</response>
         /// <response code="404">No se encontró el registro con el valor especificado.</response>
         /// <response code="500">Error interno del servidor.</response>
-        [AllowAnonymous] // Permite el acceso anónimo a este método.
+        [Authorize] // Permite el acceso anónimo a este método.
         [HttpGet("{nombreClave}/{valor}")] // Define una ruta HTTP GET con parámetros adicionales.
         public IActionResult ObtenerPorClave(string nombreProyecto, string nombreTabla, string nombreClave, string valor) // Método que obtiene una fila específica basada en una clave.
         {
@@ -272,7 +274,7 @@ namespace ProyectoBackendCsharp.Controllers
             }
         }
 
-        [AllowAnonymous]
+        [Authorize]
 
         [HttpPost("filtrar/compuesto")]
         public IActionResult ObtenerPorClaves(string nombreProyecto, string nombreTabla, [FromBody] Dictionary<string, string> claves)
@@ -468,6 +470,18 @@ namespace ProyectoBackendCsharp.Controllers
                 return BadRequest("El nombre de la tabla y los datos de la entidad no pueden estar vacíos.");
             // Retorna un error HTTP 400 si algún parámetro requerido está vacío.
 
+            var tablasSinAuth = new[] { "usuarios", "usuario", "users" };
+
+            if (!tablasSinAuth.Contains(nombreTabla.ToLower()))
+            {
+                // Validar token manualmente
+                var identity = HttpContext.User.Identity;
+                if (identity == null || !identity.IsAuthenticated)
+                {
+                    return Unauthorized("Este recurso requiere autenticación.");
+                }
+            }
+
             try
             {
                 // Convierte los datos recibidos en un diccionario con las claves y valores adecuados.
@@ -592,7 +606,7 @@ namespace ProyectoBackendCsharp.Controllers
         /// <response code="200">Devuelve un mensaje indicando que la entidad fue actualizada exitosamente.</response>
         /// <response code="400">El nombre de la tabla, la clave o los datos de la entidad están vacíos.</response>
         /// <response code="500">Error interno del servidor.</response>
-        [AllowAnonymous] // Permite el acceso anónimo a este método.
+        [Authorize] // Permite el acceso anónimo a este método.
         [HttpPut("{nombreClave}/{valorClave}")] // Define una ruta HTTP PUT con parámetros adicionales.
         public IActionResult Actualizar(string nombreProyecto, string nombreTabla, string nombreClave, string valorClave, [FromBody] Dictionary<string, object?> datosEntidad) // Actualiza una fila en la tabla basada en una clave.
         {
@@ -656,7 +670,7 @@ namespace ProyectoBackendCsharp.Controllers
         /// <response code="200">Devuelve un mensaje indicando que la entidad fue eliminada exitosamente.</response>
         /// <response code="400">El nombre de la tabla o el nombre de la clave están vacíos.</response>
         /// <response code="500">Error interno del servidor.</response>
-        [AllowAnonymous] // Permite el acceso anónimo a este método.
+        [Authorize] // Permite el acceso anónimo a este método.
         [HttpDelete("{nombreClave}/{valorClave}")] // Define una ruta HTTP DELETE con parámetros adicionales.
         public IActionResult Eliminar(string nombreProyecto, string nombreTabla, string nombreClave, string valorClave) // Elimina una fila de la tabla basada en una clave.
         {
@@ -681,7 +695,7 @@ namespace ProyectoBackendCsharp.Controllers
             }
         }
 
-        [AllowAnonymous]
+        [Authorize]
         [HttpDelete("compuesto")]
         public IActionResult EliminarConClaveCompuesta(string nombreProyecto, string nombreTabla, [FromBody] Dictionary<string, JsonElement> paresClaveValor)
         {
@@ -830,10 +844,14 @@ namespace ProyectoBackendCsharp.Controllers
                     controlConexion.CerrarBd();
 
                     Console.WriteLine($"Rol del usuarioW: {resultadoRol}");
+
+                    string tokenJwt = _tokenService.GenerarToken(valorUsuario);
+
                     return Ok(new
                     {
                         mensaje = "Contraseña verificada exitosamente.",
                         email = valorUsuario,
+                        token = tokenJwt,
                         rol = resultadoRol
                     });
                 }
@@ -859,7 +877,7 @@ namespace ProyectoBackendCsharp.Controllers
         /// <response code="400">La consulta SQL no es válida o está vacía.</response>
         /// <response code="404">No se encontraron resultados para la consulta proporcionada.</response>
         /// <response code="500">Error en la base de datos o error interno del servidor.</response>
-        [AllowAnonymous] // Permite el acceso anónimo a este método.
+        [Authorize] // Permite el acceso anónimo a este método.
         [HttpPost("ejecutar-consulta-parametrizada")] // Define la ruta HTTP POST como "/api/{nombreProyecto}/{nombreTabla}/ejecutar-consulta-parametrizada".
         public IActionResult EjecutarConsultaParametrizada([FromBody] JsonElement cuerpoSolicitud)
         {
@@ -939,7 +957,7 @@ namespace ProyectoBackendCsharp.Controllers
         /// <response code="200">Devuelve un mensaje indicando que la entidad fue creada exitosamente.</response>
         /// <response code="400">El nombre de la tabla o los datos de la entidad están vacíos.</response>
         /// <response code="500">Error interno del servidor.</response>
-        [AllowAnonymous]
+        [Authorize]
         [HttpPost("usuario")]
         public IActionResult CrearUsuario(
             string nombreProyecto,
@@ -1041,7 +1059,7 @@ namespace ProyectoBackendCsharp.Controllers
         /// <response code="400">El nombre de la tabla o los datos de la entidad están vacíos.</response>
         /// <response code="401">Credenciales incorrectas.</response>
         /// <response code="500">Error interno del servidor.</response>
-        [AllowAnonymous]
+        [Authorize]
         [HttpPost("login")]
         public IActionResult Login(string nombreProyecto, string nombreTabla, [FromBody] Dictionary<string, object?> datosEntidad)
         {

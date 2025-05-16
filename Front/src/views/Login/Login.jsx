@@ -36,6 +36,7 @@ const Login = () => {
 
             const toLlocalStorage = { email: data.email, rol: data.rol }
 
+            console.log("DATA: ", data)
             // Guarda los datos del usuario y los roles en localStorage
             localStorage.setItem("usuario", JSON.stringify(toLlocalStorage));
             localStorage.setItem("rol", data.rol);
