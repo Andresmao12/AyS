@@ -5,9 +5,9 @@ function Footer() {
         <footer className={Styles.container}>
             <p>&copy; 2025 Proyecto Aplicaciones y Servicios Web</p>
             <nav>
-                <a href="#main">Inicio</a>
-                <a href="#about">Sobre Nosotros</a>
-                <a href="#contect">Contacto</a>
+                <a href="#">Inicio</a>
+                <a href="#">Sobre Nosotros</a>
+                <a href="#">Contacto</a>
             </nav>
         </footer>
     )

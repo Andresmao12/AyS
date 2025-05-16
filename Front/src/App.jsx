@@ -1,13 +1,8 @@
-import MyRoutes from "../src/routes/Routes.jsx";
-import { BrowserRouter } from "react-router-dom";
+import MyRoutes from "../src/routes/Routes.jsx"
 
 function App() {
 
-  return (
-    <BrowserRouter>
-      <MyRoutes />
-    </BrowserRouter>
-  )
+  return <MyRoutes />
 }
 
 export default App

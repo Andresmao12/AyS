@@ -7,13 +7,12 @@
     --aux-first-color: #EBD3F8;
 
     /* Fondos */
-    --background-color: #333;
-    --background-component:#222;
+    --background-color: #FFFFFF;
     --aux-background-color: #ccc;
 
     /* Textos */
-    --text-color: #FFF;
-    --aux-text-color: #000;
+    --text-color: #000000;
+    --aux-text-color: #FFFFFF;
     --disable-text-color: #666666;
     --link-color: #1E88E5;
 
@@ -25,14 +24,9 @@
     --warning-color: #FFC107;
     --info-color: #2196F3;
 
-    --success-color-hv: #078e0b;
-    --error-color-hv: #a51106;
-    --warning-color-hv: #c69504;
-    --info-color-hv: #0072cf;
-
 
     /* Botones y formularios */
-    --input-background-color: #333;
+    --input-background-color: #FFFFFF;
     --input-text-color: #000000;
 
     --button-text-color: #FFFFFF;

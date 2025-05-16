@@ -14,11 +14,18 @@ const DynamicForm = ({ schema, onSubmit, onCancel, initialData = {} }) => {
             for (const field of schema.fields) {
                 if (field.type === 'fk' && field.fkTable) {
                     try {
-                        const response = await fetch(`${fetchRoute}/api/proyecto/${field.fkTable}`);
+
+                        const token = localStorage.getItem('token')
+
+                        const response = await fetch(`${fetchRoute}/api/proyecto/${field.fkTable}`, {
+                            method: 'GET',
+                            headers: {
+                                "Authorization": `Bearer ${JSON.parse(token)}`,
+                                "Content-Type": "application/json",
+                            }
+                        });
                         const data = await response.json();
-
                         options[field.name] = data;
-
                     } catch (error) {
                         console.error(`Error cargando opciones para ${field.name}:`, error);
                         options[field.name] = [];
@@ -40,11 +47,15 @@ const DynamicForm = ({ schema, onSubmit, onCancel, initialData = {} }) => {
     const handleSubmit = async (e) => {
         e.preventDefault();
         try {
+
+            const token = localStorage.getItem('token')
+
             const endpoint = schema.endpoints.create.replace('{nombreProyecto}', 'proyecto').replace('{nombreTabla}', schema.table);
             const response = await fetch(`${fetchRoute}${endpoint}`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
+                    "Authorization": `Bearer ${JSON.parse(token)}`,
                 },
                 body: JSON.stringify(formData),
             });
@@ -106,9 +117,15 @@ const DynamicForm = ({ schema, onSubmit, onCancel, initialData = {} }) => {
                         required={field.required}
                     >
                         <option value="">Seleccione una opción</option>
-                        {fkOptions[field.name]?.map((option,index) => (
+<<<<<<< Updated upstream
+                        {fkOptions[field.name]?.map((option) => (
+                            <option key={option.id} value={option.id}>
+                                {option.nombre || option.descripcion}
+=======
+                        {fkOptions[field.name]?.map((option, index) => (
                             <option key={index} value={option.id || option.nombre || option.descripcion || option.email}>
                                 {option.nombre || option.descripcion || option.email}
+>>>>>>> Stashed changes
                             </option>
                         ))}
                     </select>
@@ -143,7 +160,7 @@ const DynamicForm = ({ schema, onSubmit, onCancel, initialData = {} }) => {
         <div className="dynamic-form-container">
             <form className="dynamic-form" onSubmit={handleSubmit}>
                 {schema.fields.map((field) => (
-                    (field.name !== "id" || (field.name == "id" && field.isNecesary)  ) && (
+                    (field.name !== "id" || (field.name == "id" && field.isNecesary)) && (
                         <div className="form-group" key={field.name}>
                             <label>{field.name}</label>
                             {renderField(field)}

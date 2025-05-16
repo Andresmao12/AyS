@@ -8,17 +8,16 @@
 .data-table td {
     padding: 12px;
     text-align: left;
-    /* border-bottom: 1px solid white; */
-    background-color: var(--background-component);
-    color:#fff;
+    border-bottom: 1px solid #ddd;
+    color: black;
 }
 
 .data-table th {
-    background-color: var(--secondary-color);
+    background-color: #007bff;
     color: white;
     font-weight: 600;
 }
 
 .data-table tr:hover {
-    border-bottom: 1px solid var(--aux-first-color);
+    background-color: #f1f1f1;
 }

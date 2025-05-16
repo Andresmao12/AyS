@@ -1,45 +1,57 @@
-import React, { useState, useEffect } from 'react';
-import './Sidebar.css';
-import { useNavigate } from 'react-router-dom';
+import React from 'react'
+import './Sidebar.css'
+import { useNavigate } from 'react-router-dom'
 
-import { permissions } from '../../../../utils/helpers/constants';
+const Sidebar = ({ userRole = 'admin' }) => {
 
-const Sidebar = () => {
-    const navigate = useNavigate();
-    const [rol, setRol] = useState('');
+    const navigate = useNavigate()
 
-    // Recuperar el rol del usuario desde localStorage
-    useEffect(() => {
-        const storedRol = localStorage.getItem('rol');
-        if (storedRol) {
-            setRol(storedRol);
-        }
-    }, []);
-
-    const handleCerrarSesion = () => {
-        navigate('/');
-        window.localStorage.clear();
+    const permissions = {
+        admin: [
+            'Indicador',
+            'tipo_indicador',
+            'reprensentacion_visual',
+            'tipo_actor',
+            'fuente',
+            'unidad_medicion',
+            'sentido',
+            'frecuencia',
+            'representvisualporindicador',
+            'responsablesporindicador',
+            'actor',
+            'fuentes_por_indicador',
+            'variablesporindicador',
+            'variable'
+        ],
+        verificador: [''],
+        validador: []
     };
 
-    const menuItems = permissions[rol] || [];
+
+    const menuItems = permissions[userRole] || [];
 
     return (
         <div className="sidebar">
             <div className="sidebar-header">
                 <h2>Opciones</h2>
             </div>
+
+
             <ul className="sidebar-menu">
                 {menuItems.map((item, index) => (
-                    <li key={`${item}-${index}`} className="sidebar-menu-item" onClick={() => navigate(`/formularios/${item}`)}>
-                        {item}
-                    </li>
+                    <>
+                        <li key={`${item}-${index}`} className="sidebar-menu-item" onClick={() => { navigate(`/formularios/${item}`) }} >
+                            {item}
+                        </li>
+                    </>
                 ))}
-                <li className='sidebar-menu-item exit' onClick={handleCerrarSesion}>
+
+                <li className='sidebar-menu-item exit' onClick={() => { navigate('/') }}>
                     Cerrar Sesion
                 </li>
             </ul>
         </div>
-    );
-};
+    )
+}
 
 export default Sidebar;

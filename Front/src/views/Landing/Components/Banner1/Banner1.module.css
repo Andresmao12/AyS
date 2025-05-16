@@ -70,7 +70,6 @@
 
     animation: initialBlur linear both;
     animation-timeline: scroll(root);
-    animation-range: 0 4em;
 
 }
 

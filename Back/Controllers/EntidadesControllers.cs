@@ -1,4 +1,3 @@
-
 #nullable enable // Habilita las características de referencia nula en C#, permitiendo anotaciones y advertencias relacionadas con posibles valores nulos.
 using System; // Importa el espacio de nombres que contiene tipos fundamentales como Exception, Console, etc.
 using System.Collections.Generic; // Importa el espacio de nombres para colecciones genéricas como Dictionary.
@@ -12,8 +11,7 @@ using System.Linq; // Importa el espacio de nombres para operaciones de consulta
 using System.Text.Json; // Importa el espacio de nombres para manejar JSON.
 //using csharpapi.Models; // Importa los modelos del proyecto.
 using csharpapi.Services; // Importa los servicios del proyecto.
-using BCrypt.Net;
-using System.Threading.Tasks; // Importa el espacio de nombres para trabajar con BCrypt para hashing de contraseñas.
+using BCrypt.Net; // Importa el espacio de nombres para trabajar con BCrypt para hashing de contraseñas.
 
 namespace ProyectoBackendCsharp.Controllers
 {
@@ -463,7 +461,7 @@ namespace ProyectoBackendCsharp.Controllers
         /// <response code="500">Error interno del servidor.</response>
         [AllowAnonymous] // Permite que cualquier usuario acceda a este método sin necesidad de autenticación.
         [HttpPost] // Indica que este método maneja solicitudes HTTP POST.
-        public async Task<IActionResult> Crear(string nombreProyecto, string nombreTabla, [FromBody] Dictionary<string, object?> datosEntidad)
+        public IActionResult Crear(string nombreProyecto, string nombreTabla, [FromBody] Dictionary<string, object?> datosEntidad)
         {
             // Verifica si el nombre de la tabla es nulo o vacío, o si los datos a insertar están vacíos.
             if (string.IsNullOrWhiteSpace(nombreTabla) || datosEntidad == null || !datosEntidad.Any())
@@ -832,6 +830,9 @@ namespace ProyectoBackendCsharp.Controllers
                 // Si la contraseña es correcta, retorna un mensaje de éxito.
                 if (esContrasenaValida)
                 {
+<<<<<<< Updated upstream
+                    return Ok("Contraseña verificada exitosamente.");
+=======
                     // Consulta para obtener el rol del usuario
                     string consultaRolSQL = @"
                                 SELECT r.nombre
@@ -855,6 +856,7 @@ namespace ProyectoBackendCsharp.Controllers
                         token = tokenJwt,
                         rol = resultadoRol
                     });
+>>>>>>> Stashed changes
                 }
                 else
                 {
@@ -947,6 +949,8 @@ namespace ProyectoBackendCsharp.Controllers
             }
         }
 
+<<<<<<< Updated upstream
+=======
         /// <summary>
         /// Crea un nuevo registro en la tabla especificada con los datos proporcionados
         /// y asigna automáticamente el rol "invitado" (5) si la tabla es "usuario".
@@ -1141,6 +1145,7 @@ namespace ProyectoBackendCsharp.Controllers
             }
         }
 
+>>>>>>> Stashed changes
     }
 }
 
@@ -1229,3 +1234,4 @@ Códigos de estado HTTP:
 - 510 No extendido: Se requiere la extensión adicional de las políticas de acceso.
 - 511 Se requiere autenticación de red: El cliente debe autenticar la red para poder acceder al recurso.
 */
+

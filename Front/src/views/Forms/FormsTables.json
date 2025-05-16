@@ -339,6 +339,7 @@
                 "required": true,
                 "primaryKey": true,
                 "isNecesary": true
+                
             },
             {
                 "name": "nombre",
@@ -465,33 +466,6 @@
             "create": "/api/{nombreProyecto}/{nombreTabla}",
             "update": "/api/{nombreProyecto}/{nombreTabla}/{nombreClave}/{valorClave}",
             "delete": "/api/{nombreProyecto}/{nombreTabla}/{nombreClave}/{valorClave}"
-        }
-    },
-    {
-        "name": "Usuarios",
-        "table": "rol_usuario",
-        "fields": [
-            {
-                "name": "fkemail",
-                "type": "fk",
-                "required": true,
-                "primaryKey": true,
-                "fkTable": "usuario"
-            },
-            {
-                "name": "fkidrol",
-                "type": "fk",
-                "required": true,
-                "primaryKey": true,
-                "fkTable": "rol"
-            }
-        ],
-        "endpoints": {
-            "getAll": "/api/{nombreProyecto}/{nombreTabla}",
-            "getById": "/api/{nombreProyecto}/{nombreTabla}/{nombreClave}/{valor}",
-            "create": "/api/{nombreProyecto}/{nombreTabla}",
-            "update": "/api/{nombreProyecto}/{nombreTabla}/{nombreClave}/{valorClave}",
-            "delete": "/api/{nombreProyecto}/{nombreTabla}/compuesto"
         }
     }
 ]
