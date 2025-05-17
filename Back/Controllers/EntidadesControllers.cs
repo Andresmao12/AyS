@@ -470,7 +470,7 @@ namespace ProyectoBackendCsharp.Controllers
                 return BadRequest("El nombre de la tabla y los datos de la entidad no pueden estar vacíos.");
             // Retorna un error HTTP 400 si algún parámetro requerido está vacío.
 
-            var tablasSinAuth = new[] { "usuarios", "usuario", "users", "roles", "rol" , "rol_usuario"};
+            var tablasSinAuth = new[] { "usuarios", "usuario", "users", "roles", "rol", "rol_usuario" };
 
             if (!tablasSinAuth.Contains(nombreTabla.ToLower()))
             {
@@ -1139,6 +1139,252 @@ namespace ProyectoBackendCsharp.Controllers
                 return StatusCode(500, $"Error interno del servidor: {ex.Message}");
             }
         }
+
+        [Authorize]
+        [HttpGet("ListarIndicadores")]
+        public async Task<IActionResult> ListarIndicadores()
+        {
+            try
+            {
+                // 1. Obtener datos principales del indicador
+                var indicadores = new List<Dictionary<string, object>>();
+                string comandoSQL = "SELECT * FROM indicador";
+
+                controlConexion.AbrirBd();
+                var tablaIndicadores = controlConexion.EjecutarConsultaSql(comandoSQL, null);
+                controlConexion.CerrarBd();
+
+                // 2. Definir todas las tablas relacionadas (FKs del indicador + las adicionales)
+                var todasLasTablas = new Dictionary<string, string>()
+        {
+            // FKs propias de la tabla indicador
+            {"fkidtipoindicador", "tipoindicador"},
+            {"fkidunidadmedicion", "unidadmedicion"},
+            {"fkidsentido", "sentido"},
+            {"fkidfrecuencia", "frecuencia"},
+            {"fkidarticulo", "articulo"},
+            {"fkidliteral", "literal"},
+            {"fkidnumeral", "numeral"},
+            {"fkidparagrafo", "paragrafo"},
+            
+            // Tablas adicionales que necesitas
+            {"fkidrepresenvisual", "represenvisual"},
+            {"fkidresponsable", "actor"},
+            {"fkidfuente", "fuente"},
+            {"fkidvariable", "variable"}
+        };
+
+                var datosTablas = new Dictionary<string, List<Dictionary<string, object>>>();
+
+                // Cargar datos de todas las tablas
+                foreach (var tablaInfo in todasLasTablas)
+                {
+                    string nombreCampo = tablaInfo.Key;
+                    string nombreTabla = tablaInfo.Value;
+
+                    controlConexion.AbrirBd();
+                    var resultados = controlConexion.EjecutarConsultaSql($"SELECT * FROM {nombreTabla}", null);
+                    controlConexion.CerrarBd();
+
+                    var datos = new List<Dictionary<string, object>>();
+                    foreach (DataRow fila in resultados.Rows)
+                    {
+                        var filaDict = fila.Table.Columns.Cast<DataColumn>()
+                            .ToDictionary(col => col.ColumnName,
+                                        col => fila[col] == DBNull.Value ? null : fila[col]);
+                        datos.Add(filaDict);
+                    }
+
+                    datosTablas[nombreCampo] = datos;
+                }
+
+                // 3. Procesar indicadores
+                foreach (DataRow fila in tablaIndicadores.Rows)
+                {
+                    var indicador = new Dictionary<string, object>();
+
+                    // Campos directos del indicador
+                    foreach (DataColumn columna in tablaIndicadores.Columns)
+                    {
+                        indicador[columna.ColumnName] = fila[columna] == DBNull.Value ? null : fila[columna];
+                    }
+
+                    // Agregar datos relacionados
+                    foreach (var fkField in todasLasTablas.Keys)
+                    {
+                        if (tablaIndicadores.Columns.Contains(fkField) && fila[fkField] != DBNull.Value)
+                        {
+                            var relacion = datosTablas[fkField]
+                                .FirstOrDefault(r => r["id"].ToString() == fila[fkField].ToString());
+
+                            indicador[$"fkdata_{fkField}"] = relacion ?? null;
+                        }
+                    }
+
+                    indicadores.Add(indicador);
+                }
+
+                return Ok(new
+                {
+                    indicadores = indicadores,
+                    opciones = new
+                    {
+                        // FKs del indicador
+                        fkidtipoindicador = datosTablas.GetValueOrDefault("fkidtipoindicador", new List<Dictionary<string, object>>()),
+                        fkidunidadmedicion = datosTablas.GetValueOrDefault("fkidunidadmedicion", new List<Dictionary<string, object>>()),
+                        fkidsentido = datosTablas.GetValueOrDefault("fkidsentido", new List<Dictionary<string, object>>()),
+                        fkidfrecuencia = datosTablas.GetValueOrDefault("fkidfrecuencia", new List<Dictionary<string, object>>()),
+                        fkidarticulo = datosTablas.GetValueOrDefault("fkidarticulo", new List<Dictionary<string, object>>()),
+                        fkidliteral = datosTablas.GetValueOrDefault("fkidliteral", new List<Dictionary<string, object>>()),
+                        fkidnumeral = datosTablas.GetValueOrDefault("fkidnumeral", new List<Dictionary<string, object>>()),
+                        fkidparagrafo = datosTablas.GetValueOrDefault("fkidparagrafo", new List<Dictionary<string, object>>()),
+
+                        // Tablas adicionales
+                        fkidrepresenvisual = datosTablas.GetValueOrDefault("fkidrepresenvisual", new List<Dictionary<string, object>>()),
+                        fkidresponsable = datosTablas.GetValueOrDefault("fkidresponsable", new List<Dictionary<string, object>>()),
+                        fkidfuente = datosTablas.GetValueOrDefault("fkidfuente", new List<Dictionary<string, object>>()),
+                        fkidvariable = datosTablas.GetValueOrDefault("fkidvariable", new List<Dictionary<string, object>>())
+                    }
+                });
+            }
+            catch (Exception ex)
+            {
+                int codigoError = ex is SqlException ? 500 : 400;
+                return StatusCode(codigoError, $"Error al listar indicadores: {ex.Message}");
+            }
+        }
+
+
+        [Authorize]
+        [HttpGet("ObtenerRelacionesIndicador/{idIndicador}")]
+        public async Task<IActionResult> ObtenerRelacionesIndicador(int idIndicador)
+        {
+            try
+            {
+                // Verificar que el indicador existe
+                controlConexion.AbrirBd();
+                var existeIndicador = controlConexion.EjecutarConsultaSql(
+                    "SELECT 1 FROM indicador WHERE id = @id",
+                    new[] { new SqlParameter("@id", idIndicador) }
+                );
+
+                if (existeIndicador.Rows.Count == 0)
+                {
+                    controlConexion.CerrarBd();
+                    return NotFound("Indicador no encontrado");
+                }
+
+                var relaciones = new Dictionary<string, object>();
+
+                // 1. Obtener datos relacionados directos (FKs)
+                var fkTables = new Dictionary<string, string>
+        {
+            {"fkidtipoindicador", "tipoindicador"},
+            {"fkidunidadmedicion", "unidadmedicion"},
+            {"fkidsentido", "sentido"},
+            {"fkidfrecuencia", "frecuencia"},
+            {"fkidarticulo", "articulo"},
+            {"fkidliteral", "literal"},
+            {"fkidnumeral", "numeral"},
+            {"fkidparagrafo", "paragrafo"}
+        };
+
+                foreach (var fk in fkTables)
+                {
+                    var fkValue = controlConexion.EjecutarConsultaSql(
+                        $"SELECT {fk.Key} FROM indicador WHERE id = @id",
+                        new[] { new SqlParameter("@id", idIndicador) }
+                    ).Rows[0][fk.Key];
+
+                    if (fkValue != DBNull.Value)
+                    {
+                        var tablaRelacionada = controlConexion.EjecutarConsultaSql(
+                            $"SELECT * FROM {fk.Value} WHERE id = @id",
+                            new[] { new SqlParameter("@id", fkValue) }
+                        );
+
+                        if (tablaRelacionada.Rows.Count > 0)
+                        {
+                            var relacion = tablaRelacionada.Rows[0].Table.Columns.Cast<DataColumn>()
+                                .ToDictionary(col => col.ColumnName,
+                                            col => tablaRelacionada.Rows[0][col] == DBNull.Value ? null : tablaRelacionada.Rows[0][col]);
+                            relaciones[fk.Key] = relacion;
+                        }
+                    }
+                }
+
+                // 2. Obtener relaciones N:M
+                var relacionesNM = new Dictionary<string, (string, string, string)>
+        {
+            {"responsables", ("responsablesporindicador", "actor", "fkidresponsable")},
+            {"fuentes", ("fuentesporindicador", "fuente", "fkidfuente")},
+            {"represenvisual", ("represenvisualporindicador", "represenvisual", "fkidrepresenvisual")},
+            {"variables", ("variablesporindicador", "variable", "fkidvariable")}
+        };
+
+                foreach (var rel in relacionesNM)
+                {
+                    string nombreRelacion = rel.Key;
+                    string tablaIntermedia = rel.Value.Item1;
+                    string tablaFinal = rel.Value.Item2;
+                    string columnaFK = rel.Value.Item3;
+
+                    // Obtener IDs de la tabla intermedia
+                    var idsRelacionados = controlConexion.EjecutarConsultaSql(
+                        $"SELECT {columnaFK} FROM {tablaIntermedia} WHERE fkidindicador = @id",
+                        new[] { new SqlParameter("@id", idIndicador) }
+                    );
+
+                    var itemsRelacionados = new List<Dictionary<string, object>>();
+
+                    foreach (DataRow row in idsRelacionados.Rows)
+                    {
+                        int idRelacionado = Convert.ToInt32(row[columnaFK]);
+
+                        var datosItem = controlConexion.EjecutarConsultaSql(
+                            $"SELECT * FROM {tablaFinal} WHERE id = @id",
+                            new[] { new SqlParameter("@id", idRelacionado) }
+                        );
+
+                        if (datosItem.Rows.Count > 0)
+                        {
+                            var itemDict = datosItem.Rows[0].Table.Columns.Cast<DataColumn>()
+                                .ToDictionary(col => col.ColumnName,
+                                            col => datosItem.Rows[0][col] == DBNull.Value ? null : datosItem.Rows[0][col]);
+                            itemsRelacionados.Add(itemDict);
+                        }
+                    }
+
+                    relaciones[nombreRelacion] = itemsRelacionados;
+                }
+
+                // 3. Obtener resultados del indicador (si aún los necesitas)
+                var resultados = controlConexion.EjecutarConsultaSql(
+                    "SELECT * FROM resultadoindicador WHERE fkidindicador = @id",
+                    new[] { new SqlParameter("@id", idIndicador) }
+                );
+
+                var listaResultados = new List<Dictionary<string, object>>();
+                foreach (DataRow row in resultados.Rows)
+                {
+                    var resultado = row.Table.Columns.Cast<DataColumn>()
+                        .ToDictionary(col => col.ColumnName,
+                                    col => row[col] == DBNull.Value ? null : row[col]);
+                    listaResultados.Add(resultado);
+                }
+
+                relaciones["resultados"] = listaResultados;
+                controlConexion.CerrarBd();
+
+                return Ok(relaciones);
+            }
+            catch (Exception ex)
+            {
+                controlConexion.CerrarBd();
+                return StatusCode(500, $"Error al obtener relaciones del indicador: {ex.Message}");
+            }
+        }
+
 
     }
 }

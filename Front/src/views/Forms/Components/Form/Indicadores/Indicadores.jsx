@@ -4,6 +4,9 @@ import Schemas from '../../../FormsTables.json'
 import { fetchRoute } from '../../../../../utils/helpers/fecthRoutes';
 import { MdOutlineDelete } from 'react-icons/md';
 import { RxUpdate } from 'react-icons/rx';
+import { useLocation } from 'react-router-dom';
+import { FaEye } from 'react-icons/fa';
+import IndicadorModal from './IndicadorModal';
 
 const tipos = {
     Responsables: [
@@ -35,6 +38,12 @@ export const Indicadores = () => {
     const [columns, setcolumns] = useState(Schemas[0].fields.map((field) => field.name))
     const [tableData, setTableData] = useState([]); // Datos de toda la tabla
 
+    const [modalVisible, setModalVisible] = useState(false);
+    const [loading, setLoading] = useState(false);
+    const [indicador, setIndicador] = useState(null);
+
+    const url = useLocation()
+
 
     useEffect(() => {
         const storedRol = localStorage.getItem('rol');
@@ -44,9 +53,11 @@ export const Indicadores = () => {
     }, []);
 
     useEffect(() => {
-        loadFkOptions()
-        handleConsultar()
-    }, [])
+        if (Schemas) {
+            loadFkOptions()
+        }
+    }, [Schemas, url])
+
 
     const handleChangeShowFormCreate = () => {
         setshowModalCreate(!showModalCreate)
@@ -135,84 +146,34 @@ export const Indicadores = () => {
 
 
     const loadFkOptions = async () => {
-        const options = {};
-
-        const optionsAdd = [
-            { name: "fkidrepresenvisual", table: "represenvisual" },
-            { name: "fkidresponsable", table: "actor" },
-            { name: "fkidfuente", table: "fuente" },
-            { name: "fkidvariable", table: "variable" },
-        ]
-
-        for (const field of Schemas[0].fields) {
-            if (field.type === 'fk' && field.fkTable) {
-                try {
-                    const token = localStorage.getItem('token')
-
-                    const response = await fetch(`${fetchRoute}/api/proyecto/${field.fkTable}`, {
-                        method: "GET",
-                        headers: {
-                            "Authorization": `Bearer ${JSON.parse(token)}`,
-                            "Content-Type": "application/json",
-                        }
-                    });
-                    const data = await response.json();
-                    options[field.name] = data;
-                } catch (error) {
-                    console.error(`Error cargando opciones para ${field.name}:`, error);
-                    options[field.name] = [];
-                }
-            }
-        }
-
-        for (const field of optionsAdd) {
-            try {
-
-                const token = localStorage.getItem('token')
-
-                const response = await fetch(`${fetchRoute}/api/proyecto/${field.table}`, {
-                    method: "GET",
-                    headers: {
-                        "Authorization": `Bearer ${JSON.parse(token)}`,
-                        "Content-Type": "application/json",
-                    }
-                });
-                const data = await response.json();
-                options[field.name] = data;
-            } catch (error) {
-                console.error(`Error cargando opciones para ${field.name}:`, error);
-                options[field.name] = [];
-            }
-        }
-
-        setFkOptions(options);
-    };
-
-    const handleConsultar = async (id = null) => {
         try {
-            let endpoint = Schemas[0].endpoints.getAll
-                .replace('{nombreProyecto}', 'proyecto')
-                .replace('{nombreTabla}', Schemas[0].table);
-
-            const token = localStorage.getItem('token')
-
-            const response = await fetch(`${fetchRoute}${endpoint}`, {
+            const token = localStorage.getItem('token');
+            const response = await fetch(`${fetchRoute}/api/proyecto/indicadores/ListarIndicadores`, {
                 method: "GET",
                 headers: {
                     "Authorization": `Bearer ${JSON.parse(token)}`,
                     "Content-Type": "application/json",
                 }
             });
-            const data = await response.json();
-            setTableData(data);
+
+
+            if (response.status == 200) {
+                const data = await response.json();
+                console.log(data)
+                setFkOptions(data.opciones);
+                setTableData(data.indicadores);
+            } else {
+                setTimeout(() => {
+                    loadFkOptions()
+                }, 300);
+            }
+
 
         } catch (error) {
-            console.log(error)
-            console.error('Error al consultar:', error);
-            //if (id) handleConsultar() // ----> Validar si fue un 404?
-
+            console.error("Error cargando datos de indicadores:", error);
+            setFkOptions({});
         }
-    }
+    };
 
     /* MODAL */
 
@@ -329,6 +290,43 @@ export const Indicadores = () => {
         }
     };
 
+
+    const cargarIndicadorCompleto = async (id) => {
+
+        console.log(id)
+        try {
+            setLoading(true);
+
+            const token = localStorage.getItem('token');
+            const response = await fetch(`${fetchRoute}/api/proyecto/indicadores/ObtenerIndicadorCompleto/${id}`, {
+                method: "GET",
+                headers: {
+                    "Authorization": `Bearer ${JSON.parse(token)}`,
+                    "Content-Type": "application/json",
+                }
+            });
+
+            console.log(response)
+
+            if (!response.ok) throw new Error("Error al cargar indicador");
+
+            const data = await response.json();
+
+            console.log(data)
+
+            setTimeout(() => {
+                setIndicador(data);
+                setModalVisible(true);
+                setLoading(false);
+            }, 800);
+
+            return data;
+
+        } catch (error) {
+            console.error("Error:", error);
+            return null;
+        }
+    };
 
 
     return (
@@ -462,6 +460,7 @@ export const Indicadores = () => {
                         ))}
                         {rol.includes('admin') && <th>Eliminar</th>}
                         {(rol.includes('admin') || rol.includes('Validador')) && <th>Actualizar</th>}
+                        {(rol.includes('admin') || rol.includes('Validador') || rol.includes('Verificador')) && <th>Ver info.</th>}
                     </tr>
                 </thead>
                 <tbody>
@@ -494,10 +493,22 @@ export const Indicadores = () => {
                                     </span>
                                 </td>
                             )}
+
+                            {(rol.includes('admin') || rol.includes('Validador') || rol.includes('Verificador')) && <td><FaEye cursor={'pointer'} onClick={() => { cargarIndicadorCompleto(row.id) }} /></td>}
+
                         </tr>
                     ))}
                 </tbody>
             </table>
+
+
+
+            {modalVisible && indicador && (
+                <IndicadorModal
+                    indicador={indicador}
+                    onClose={() => setModalVisible(false)}
+                />
+            )}
 
         </div>
     )

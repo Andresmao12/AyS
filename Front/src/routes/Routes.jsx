@@ -43,8 +43,6 @@ const Router = () => {
 export default Router;
 
 const ValidateSection = ({ location, isAuthenticated, usuario }) => {
-  console.log("validatesection: ", location.pathname.split("/")[1], usuario, permissions)
-
   if (isAuthenticated && !permissions[`${usuario?.rol}`]?.includes(location.pathname.split("/")[2])) {
     return <h2 style={{ placeSelf: "center" }} >Acceso denegado</h2>
 
