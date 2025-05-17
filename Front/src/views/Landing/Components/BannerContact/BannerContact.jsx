@@ -4,11 +4,6 @@ import styles from "./BannerContact.module.css";
 const BannerContact = () => {
     const [showForm, setShowForm] = useState(false);
 
-    const handleSubmit = (e) => {
-        e.preventDefault();
-        // Aquí podés manejar los datos
-        alert("Formulario enviado");
-    };
 
     const handleShowform = () => {
         setShowForm(!showForm)
@@ -43,13 +38,14 @@ const BannerContact = () => {
             </div>
 
             {showForm && (
-                <form className={styles.contactForm} onSubmit={handleSubmit}>
+                <form className={styles.contactForm} action={"https://formsubmit.co/kepoxa5186@neuraxo.com"} method="POST">
                     <h2>Un asesor se pondra en contacto contigo!</h2>
                     <div className={styles.inpCont}>
                         <input
                             id="inp-name"
                             placeholder=" "
                             required
+                            name="user_name"
                         />
                         <label htmlFor="inp-name">Nombre</label>
                     </div>
@@ -58,6 +54,7 @@ const BannerContact = () => {
                             id="inp-email"
                             placeholder=" "
                             required
+                            name="user_email"
                         />
                         <label htmlFor="inp-email">Correo</label>
                     </div>
@@ -66,6 +63,7 @@ const BannerContact = () => {
                             id="inp-desc"
                             placeholder=" "
                             required
+                            name="descripcion"
                         />
                         <label htmlFor="inp-desc">Descripcion</label>
                     </div>

@@ -8,8 +8,19 @@
 }
 
 .sidebar-header {
-  margin-bottom: 20px;
+  margin-bottom: 10px;
   text-align: center;
+  font-size: 14px;
+
+  display: flex;
+  align-items: center;
+  gap: .5em;
+
+  & h2 {
+    width: min-content;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
 }
 
 .sidebar-menu {
@@ -35,9 +46,15 @@
   margin: 8px 0;
 }
 
-.exit{
+.exit {
   background-color: #e74c3c;
   color: white;
   border: none;
   cursor: pointer;
+}
+
+.userImg {
+  max-width: 50px;
+  aspect-ratio: 1/1;
+  border-radius: 50%;
 }

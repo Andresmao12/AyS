@@ -7,13 +7,14 @@ import { permissions } from '../../../../utils/helpers/constants';
 const Sidebar = () => {
     const navigate = useNavigate();
     const [rol, setRol] = useState('');
+    const [userName, setUserName] = useState('')
 
     // Recuperar el rol del usuario desde localStorage
     useEffect(() => {
+        const storeUserName = JSON.parse(localStorage.getItem('usuario')).email
         const storedRol = localStorage.getItem('rol');
-        if (storedRol) {
-            setRol(storedRol);
-        }
+        if (storedRol) setRol(storedRol);
+        if (storeUserName) setUserName(storeUserName)
     }, []);
 
     const handleCerrarSesion = () => {
@@ -25,8 +26,10 @@ const Sidebar = () => {
 
     return (
         <div className="sidebar">
+
             <div className="sidebar-header">
-                <h2>Opciones</h2>
+                <img src="https://i.imgur.com/wkZcKwI.png" alt="user image" className='userImg' />
+                <h2>{userName}</h2>
             </div>
             <ul className="sidebar-menu">
                 {menuItems.map((item, index) => (
