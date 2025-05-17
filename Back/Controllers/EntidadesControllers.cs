@@ -1256,27 +1256,34 @@ namespace ProyectoBackendCsharp.Controllers
 
 
         [Authorize]
-        [HttpGet("ObtenerRelacionesIndicador/{idIndicador}")]
-        public async Task<IActionResult> ObtenerRelacionesIndicador(int idIndicador)
+        [HttpGet("ObtenerIndicadorCompleto/{idIndicador}")]
+        public async Task<IActionResult> ObtenerIndicadorCompleto(int idIndicador)
         {
             try
             {
-                // Verificar que el indicador existe
+                // 1. Obtener información básica del indicador
                 controlConexion.AbrirBd();
-                var existeIndicador = controlConexion.EjecutarConsultaSql(
-                    "SELECT 1 FROM indicador WHERE id = @id",
+                var tablaIndicador = controlConexion.EjecutarConsultaSql(
+                    "SELECT * FROM indicador WHERE id = @id",
                     new[] { new SqlParameter("@id", idIndicador) }
                 );
 
-                if (existeIndicador.Rows.Count == 0)
+                if (tablaIndicador.Rows.Count == 0)
                 {
                     controlConexion.CerrarBd();
                     return NotFound("Indicador no encontrado");
                 }
 
-                var relaciones = new Dictionary<string, object>();
+                var indicador = new Dictionary<string, object>();
+                DataRow filaIndicador = tablaIndicador.Rows[0];
 
-                // 1. Obtener datos relacionados directos (FKs)
+                // Mapear campos directos
+                foreach (DataColumn columna in tablaIndicador.Columns)
+                {
+                    indicador[columna.ColumnName] = filaIndicador[columna] == DBNull.Value ? null : filaIndicador[columna];
+                }
+
+                // 2. Obtener datos relacionados directos (FKs)
                 var fkTables = new Dictionary<string, string>
         {
             {"fkidtipoindicador", "tipoindicador"},
@@ -1291,16 +1298,11 @@ namespace ProyectoBackendCsharp.Controllers
 
                 foreach (var fk in fkTables)
                 {
-                    var fkValue = controlConexion.EjecutarConsultaSql(
-                        $"SELECT {fk.Key} FROM indicador WHERE id = @id",
-                        new[] { new SqlParameter("@id", idIndicador) }
-                    ).Rows[0][fk.Key];
-
-                    if (fkValue != DBNull.Value)
+                    if (filaIndicador[fk.Key] != DBNull.Value)
                     {
                         var tablaRelacionada = controlConexion.EjecutarConsultaSql(
                             $"SELECT * FROM {fk.Value} WHERE id = @id",
-                            new[] { new SqlParameter("@id", fkValue) }
+                            new[] { new SqlParameter("@id", filaIndicador[fk.Key]) }
                         );
 
                         if (tablaRelacionada.Rows.Count > 0)
@@ -1308,13 +1310,13 @@ namespace ProyectoBackendCsharp.Controllers
                             var relacion = tablaRelacionada.Rows[0].Table.Columns.Cast<DataColumn>()
                                 .ToDictionary(col => col.ColumnName,
                                             col => tablaRelacionada.Rows[0][col] == DBNull.Value ? null : tablaRelacionada.Rows[0][col]);
-                            relaciones[fk.Key] = relacion;
+                            indicador[$"fkdata_{fk.Key}"] = relacion;
                         }
                     }
                 }
 
-                // 2. Obtener relaciones N:M
-                var relacionesNM = new Dictionary<string, (string, string, string)>
+                // 3. Obtener relaciones N:M y otras tablas asociadas
+                var relaciones = new Dictionary<string, (string, string, string)>
         {
             {"responsables", ("responsablesporindicador", "actor", "fkidresponsable")},
             {"fuentes", ("fuentesporindicador", "fuente", "fkidfuente")},
@@ -1322,7 +1324,7 @@ namespace ProyectoBackendCsharp.Controllers
             {"variables", ("variablesporindicador", "variable", "fkidvariable")}
         };
 
-                foreach (var rel in relacionesNM)
+                foreach (var rel in relaciones)
                 {
                     string nombreRelacion = rel.Key;
                     string tablaIntermedia = rel.Value.Item1;
@@ -1355,10 +1357,10 @@ namespace ProyectoBackendCsharp.Controllers
                         }
                     }
 
-                    relaciones[nombreRelacion] = itemsRelacionados;
+                    indicador[nombreRelacion] = itemsRelacionados;
                 }
 
-                // 3. Obtener resultados del indicador (si aún los necesitas)
+                // 4. Obtener resultados del indicador
                 var resultados = controlConexion.EjecutarConsultaSql(
                     "SELECT * FROM resultadoindicador WHERE fkidindicador = @id",
                     new[] { new SqlParameter("@id", idIndicador) }
@@ -1373,19 +1375,17 @@ namespace ProyectoBackendCsharp.Controllers
                     listaResultados.Add(resultado);
                 }
 
-                relaciones["resultados"] = listaResultados;
+                indicador["resultados"] = listaResultados;
                 controlConexion.CerrarBd();
 
-                return Ok(relaciones);
+                return Ok(indicador);
             }
             catch (Exception ex)
             {
                 controlConexion.CerrarBd();
-                return StatusCode(500, $"Error al obtener relaciones del indicador: {ex.Message}");
+                return StatusCode(500, $"Error al obtener indicador: {ex.Message}");
             }
         }
-
-
     }
 }
 
