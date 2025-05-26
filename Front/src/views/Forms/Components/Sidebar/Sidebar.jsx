@@ -32,11 +32,15 @@ const Sidebar = () => {
                 <h2>{userName}</h2>
             </div>
             <ul className="sidebar-menu">
+                <li className="sidebar-menu-item" onClick={() => navigate('/formularios/consultas')}>
+                    Consultas
+                </li>
                 {menuItems.map((item, index) => (
                     <li key={`${item}-${index}`} className="sidebar-menu-item" onClick={() => navigate(`/formularios/${item}`)}>
                         {item}
                     </li>
                 ))}
+
                 <li className='sidebar-menu-item exit' onClick={handleCerrarSesion}>
                     Cerrar Sesion
                 </li>

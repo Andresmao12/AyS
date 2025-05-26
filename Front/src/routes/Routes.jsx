@@ -5,6 +5,7 @@ import Login from "../views/Login/Login.jsx";
 import Registro from "../views/Login/Registro.jsx";
 import { FormsTemplate } from "../views/Forms/FormsTemplate.jsx";
 import { permissions } from "../utils/helpers/constants.js";
+import { Consultas } from "../views/Forms/Components/Form/Consultas/Consultas.jsx";
 
 const Router = () => {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
@@ -33,9 +34,18 @@ const Router = () => {
         }
       />
       <Route
+        path="/formularios/consultas"
+        element={<Consultas />}
+      />
+
+
+      <Route
         path="/formularios/:table"
         element={<ValidateSection location={location} isAuthenticated={isAuthenticated} usuario={usuario} />}
       />
+
+
+
     </Routes>
   );
 };

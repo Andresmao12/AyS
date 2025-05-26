@@ -1386,6 +1386,139 @@ namespace ProyectoBackendCsharp.Controllers
                 return StatusCode(500, $"Error al obtener indicador: {ex.Message}");
             }
         }
+
+        [HttpGet("consultas-indicadores")]
+        public IActionResult ConsultasIndicadores(
+                    [FromQuery] int tipoConsulta,
+                    [FromQuery] Dictionary<string, object> filtros = null)
+        {
+            try
+            {
+                string consultaSQL = tipoConsulta switch
+                {
+                    // Consulta 1: Listado completo de indicadores con relaciones
+                    1 => @"SELECT 
+                            i.id, i.codigo, i.nombre, i.objetivo, i.alcance, i.formula, i.meta,
+                            ti.nombre AS tipo_indicador,
+                            um.descripcion AS unidad_medicion,
+                            s.nombre AS sentido,
+                            f.nombre AS frecuencia
+                          FROM indicador i
+                          LEFT JOIN tipoindicador ti ON i.fkidtipoindicador = ti.id
+                          LEFT JOIN unidadmedicion um ON i.fkidunidadmedicion = um.id
+                          LEFT JOIN sentido s ON i.fkidsentido = s.id
+                          LEFT JOIN frecuencia f ON i.fkidfrecuencia = f.id",
+
+                    // Consulta 2: Indicadores con representación visual
+                    2 => @"SELECT 
+                            i.id, i.codigo, i.nombre, i.objetivo, i.formula, i.meta,
+                            rv.nombre AS representacion_visual
+                          FROM indicador i
+                          JOIN represenvisualporindicador rvi ON i.id = rvi.fkidindicador
+                          JOIN represenvisual rv ON rvi.fkidrepresenvisual = rv.id",
+
+                    // Consulta 3: Indicadores con responsables
+                    3 => @"SELECT 
+                            i.id, i.codigo, i.nombre, i.objetivo, i.formula, i.meta,
+                            a.nombre AS responsable,
+                            ta.nombre AS tipo_actor,
+                            rpi.fechaasignacion
+                          FROM indicador i
+                          JOIN responsablesporindicador rpi ON i.id = rpi.fkidindicador
+                          JOIN actor a ON rpi.fkidresponsable = a.id
+                          JOIN tipoactor ta ON a.fkidtipoactor = ta.id",
+
+                    // Consulta 4: Indicadores con fuentes
+                    4 => @"SELECT 
+                            i.id, i.codigo, i.nombre, i.objetivo, i.formula, i.meta,
+                            fu.nombre AS fuente
+                          FROM indicador i
+                          JOIN fuentesporindicador fpi ON i.id = fpi.fkidindicador
+                          JOIN fuente fu ON fpi.fkidfuente = fu.id",
+
+                    // Consulta 5: Indicadores con variables
+                    5 => @"SELECT 
+                            i.id, i.codigo, i.nombre, i.objetivo, i.formula, i.meta,
+                            v.nombre AS variable,
+                            vpi.dato,
+                            vpi.fechadato,
+                            vpi.fkemailusuario
+                          FROM indicador i
+                          JOIN variablesporindicador vpi ON i.id = vpi.fkidindicador
+                          JOIN variable v ON vpi.fkidvariable = v.id",
+
+                    // Consulta 6: Resultados de indicadores
+                    6 => @"SELECT 
+                            i.id, i.nombre, i.codigo,
+                            ri.id AS resultado_id,
+                            ri.resultado,
+                            ri.fechacalculo
+                          FROM indicador i
+                          JOIN resultadoindicador ri ON i.id = ri.fkidindicador",
+
+                    _ => null
+                };
+
+                if (string.IsNullOrEmpty(consultaSQL))
+                {
+                    return BadRequest("Tipo de consulta no válido");
+                }
+
+                // Crear lista de parámetros SQL
+                var parametros = new List<SqlParameter>();
+
+                // Aplicar filtros
+                if (filtros != null && filtros.Any())
+                {
+                    var whereClauses = new List<string>();
+                    foreach (var filtro in filtros)
+                    {
+                        if (!string.IsNullOrEmpty(filtro.Value?.ToString()))
+                        {
+                            whereClauses.Add($"{filtro.Key} LIKE @{filtro.Key}");
+                            parametros.Add(new SqlParameter($"@{filtro.Key}", $"%{filtro.Value}%"));
+                        }
+                    }
+
+                    if (whereClauses.Any())
+                    {
+                        consultaSQL += " WHERE " + string.Join(" AND ", whereClauses);
+                    }
+                }
+
+                controlConexion.AbrirBd();
+
+                // Convertir lista a array para cumplir con la firma del método
+                var parametrosArray = parametros.ToArray();
+                var tablaResultados = controlConexion.EjecutarConsultaSql(consultaSQL, parametrosArray);
+
+                controlConexion.CerrarBd();
+
+                // Procesar resultados
+                var resultados = new List<Dictionary<string, object>>();
+                foreach (DataRow fila in tablaResultados.Rows)
+                {
+                    var filaDict = new Dictionary<string, object>();
+                    foreach (DataColumn columna in tablaResultados.Columns)
+                    {
+                        filaDict[columna.ColumnName] = fila[columna] == DBNull.Value ? null : fila[columna];
+                    }
+                    resultados.Add(filaDict);
+                }
+
+                return Ok(resultados);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new
+                {
+                    error = "Error al ejecutar la consulta",
+                    detalles = ex.Message,
+                    stackTrace = ex.StackTrace
+                });
+            }
+        }
+
     }
 }
 
