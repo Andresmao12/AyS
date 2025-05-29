@@ -1,1 +1,1 @@
-export const fetchRoute = 'http://localhost:5266'
+export const fetchRoute = 'https://csharpapiapi.azure-api.net/aysback'
