@@ -8,6 +8,7 @@ import BannerMember from "./Components/BannerMember/BannerMember.jsx"
 import BannerVideo from "./Components/BannerVideo/BannerVideo.jsx"
 import BannerContact from "./Components/BannerContact/BannerContact.jsx"
 import Footer from "./Components/Footer/Footer.jsx"
+import AudioPlayer from "./Components/AudioPlayer/AudioPlayer.jsx"
 
 const membersData = {
   vanessa: "Desarrolladora y diseñadora creativa. Transforma ideas en experiencias visuales limpias y funcionales. Tiene un enfoque centrado en el usuario y se obsesiona con los detalles. Le apasiona crear interfaces accesibles, intuitivas y visualmente impactantes, siempre explorando nuevas tendencias y formas de mejorar la experiencia digital.",
@@ -19,6 +20,7 @@ const Landing = () => {
 
   return (
     <>
+    <AudioPlayer></AudioPlayer>
       <Nav />
       <main className={styles.container}>
         <BannerPpal />
