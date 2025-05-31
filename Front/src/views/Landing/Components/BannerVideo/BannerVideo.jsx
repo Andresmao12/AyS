@@ -2,13 +2,15 @@ import React from 'react'
 import ReactPlayer from "react-player";
 import styles from './BannerVideo.module.css'
 
+const content = "Usar nuestra plataforma es más fácil de lo que imaginas. En este breve video te mostramos paso a paso cómo navegar por el sistema, gestionar los indicadores, crear nuevos registros y sacarle el máximo provecho a todas las funciones disponibles."
+
 function BannerVideo() {
 
     return (
         <section className={styles.container}>
             <div className={styles.textCont}>
-                <h1>Como iniciar</h1>
-                <p>Lorem ipsum dolor sit amet consectetur, adipisicing elit. Rem expedita deleniti qui recusandae nostrum quisquam aliquid corporis vel! Qui a reiciendis deserunt praesentium similique facilis voluptate ea harum, eum temporibus.</p>
+                <h1>¿Como iniciar?</h1>
+                <p>{content}</p>
             </div>
             <div className={styles.videoCont}>
                 <ReactPlayer

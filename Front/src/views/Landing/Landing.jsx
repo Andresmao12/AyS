@@ -9,9 +9,13 @@ import BannerVideo from "./Components/BannerVideo/BannerVideo.jsx"
 import BannerContact from "./Components/BannerContact/BannerContact.jsx"
 import Footer from "./Components/Footer/Footer.jsx"
 
-const Landing = () => {
+const membersData = {
+  vanessa: "Desarrolladora y diseñadora creativa. Transforma ideas en experiencias visuales limpias y funcionales. Tiene un enfoque centrado en el usuario y se obsesiona con los detalles. Le apasiona crear interfaces accesibles, intuitivas y visualmente impactantes, siempre explorando nuevas tendencias y formas de mejorar la experiencia digital.",
+  andres: "Especialista en backend y bases de datos. Es el motor lógico detrás del sistema: organiza, optimiza y estructura con precisión. Tiene un don para detectar errores, mejorar el rendimiento y construir soluciones sólidas que escalan. Si algo funciona sin fallas, probablemente fue obra suya.",
+  mauro: "Apasionado por la IA y el desarrollo fullstack. Conecta tecnologías frontend, backend e inteligencia artificial para construir sistemas inteligentes y eficientes. Siempre está aprendiendo algo nuevo y aplicándolo para mejorar cada línea de código. Su enfoque es práctico, curioso y siempre mirando al futuro."
+}
 
-  let descriptionTemp = 'Lorem ipsum dolor sit amet consectetur adipisicing elit. Omnis eum corrupti architecto rerum at, cupiditate, minus minima, id ipsum voluptates tempore eius reiciendis. Illum labore voluptatem soluta cumque veniam voluptatum!'
+const Landing = () => {
 
   return (
     <>
@@ -21,9 +25,9 @@ const Landing = () => {
         <BannerAbout />
         <BannerServices />
         <h1 className={styles.membersTitle}>Integrantes</h1>
-        <BannerMember name='Vanessa Espinosa' description={descriptionTemp} />
-        <BannerMember name='Andres David Orozco' description={descriptionTemp} direction='right' />
-        <BannerMember name='Andres Agudelo Elorza' description={descriptionTemp} />
+        <BannerMember name='Vanessa Espinosa' description={membersData.vanessa} />
+        <BannerMember name='Andres David Orozco' description={membersData.andres} direction='right' />
+        <BannerMember name='Andres Agudelo Elorza' description={membersData.mauro} />
         <BannerVideo />
         <BannerContact />
       </main>
